@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+wheels/
+
+# Environments
+.venv/
+.env
+
+# Tool caches
+.cache/
+.coverage
+.coverage.*
+.pyright/
+.pytest_cache/
+.ruff_cache/
+htmlcov/
+
+# Editors and systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local game files and logs
+*.log
+.minecraft/
+
