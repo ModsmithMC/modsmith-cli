@@ -29,7 +29,25 @@ class TestLoader(Loader):
 
     @classmethod
     def available(cls, minecraft, *, session=None):
+        # Like real loaders, it has nothing for very old Minecraft versions.
+        if minecraft.startswith("0."):
+            return []
         return [
             LoaderVersion(cls.kind, version, minecraft, recommended=index == 0)
             for index, version in enumerate(cls.published)
+        ]
+
+
+@register
+@dataclass(frozen=True)
+class ManyLoader(TestLoader):
+    """A loader with many versions, the newest of them betas."""
+
+    kind: ClassVar[str] = "many-loader"
+
+    @classmethod
+    def available(cls, minecraft, *, session=None):
+        return [
+            LoaderVersion(cls.kind, str(number), minecraft, stable=number < 29)
+            for number in range(30, 0, -1)
         ]
