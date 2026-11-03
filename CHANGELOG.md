@@ -6,6 +6,15 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- A guide at [modsmith.meneither.site/modsmith](https://modsmith.meneither.site/modsmith/),
+  with a page for every command and setting.
+
+### Changed
+
+- The project moved to [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith).
+
 ## [0.1.0] - 2026-11-03
 
 The first release of the `modsmith` command.

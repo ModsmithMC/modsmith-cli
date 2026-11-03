@@ -45,6 +45,15 @@ uv run pyright
 uv run pytest --cov
 ```
 
+```bash
+uv run sphinx-build -W -n -b dirhtml docs docs/_build/html
+```
+
+The documentation in `docs/` is published at
+<https://modsmith.meneither.site/modsmith/> from `main`. Its command and
+settings reference is generated from the code on every build, so a new option
+only needs good help text.
+
 Tests do not use mocks. Platforms are real `Platform` subclasses that serve a
 catalogue from memory (`tests/lib/catalog.py`), and settings are isolated
 through environment variables.
@@ -59,9 +68,9 @@ pull request.
 
 Releases are published on GitHub, built from a tag.
 
-1. Make sure the `modsmith` version the app needs is on PyPI. Then remove
-   `[tool.uv.sources]` from `pyproject.toml` and run `uv lock`, so the app is
-   built and tested against the published library.
+1. Make sure the `modsmith` version the app needs is on PyPI. If
+   `[tool.uv.sources]` names `modsmith`, remove that line and run `uv lock`, so
+   the app is built and tested against the published library.
 2. Set `version` in `pyproject.toml` and move the `Unreleased` notes in
    `CHANGELOG.md` under the new version.
 3. Merge `develop` into `main`.

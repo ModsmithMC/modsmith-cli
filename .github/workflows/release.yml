@@ -23,8 +23,8 @@ jobs:
         run: test "v$(uv version --short)" = "$TAG"
       - name: Make sure the library comes from PyPI
         run: |
-          if grep -q '^\[tool.uv.sources\]' pyproject.toml; then
-            echo "Remove [tool.uv.sources] and relock: the library must come from PyPI." >&2
+          if grep -qE '^modsmith *= *[{]' pyproject.toml; then
+            echo "Remove the modsmith source and relock: the library must come from PyPI." >&2
             exit 1
           fi
       - name: Read the release notes from the changelog
