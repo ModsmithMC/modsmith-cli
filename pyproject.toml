@@ -1,6 +1,6 @@
 [project]
-name = "modsmith-app"
-version = "0.1.0"
+name = "modsmith-cli"
+version = "0.1.1"
 description = "Install Minecraft modpacks and mods for the official launcher."
 readme = "README.md"
 license = "MIT"

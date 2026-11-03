@@ -548,8 +548,8 @@ wheels = [
 ]
 
 [[package]]
-name = "modsmith-app"
-version = "0.1.0"
+name = "modsmith-cli"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "modsmith" },
