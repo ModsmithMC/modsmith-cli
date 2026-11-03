@@ -173,3 +173,39 @@ def test_search_never_shortens_the_name_to_copy(run, catalogs, monkeypatch):
     result = run("search", "sodium")
     assert "Downloads" in result.stdout
     assert "Alternative options" in result.stdout
+
+
+def test_a_rejected_curseforge_key_is_explained(run, catalogs, monkeypatch):
+    monkeypatch.setenv("CURSEFORGE_API_KEY", "mangled")
+    catalogs["curseforge"] = Catalog(name="curseforge", refuse=403)
+    result = run("search", "jei", "-p", "curseforge")
+    assert result.exit_code == 1
+    assert "CurseForge rejected the API key." in result.stderr
+    assert "single quotes" in result.stderr
+    assert "internet" not in result.stderr
+
+
+def test_searching_everywhere_continues_past_a_failure(run, catalogs, monkeypatch):
+    monkeypatch.setenv("CURSEFORGE_API_KEY", "mangled")
+    catalogs["modrinth"] = Catalog(project("jei"))
+    catalogs["curseforge"] = Catalog(name="curseforge", refuse=403)
+    result = run("search", "jei", "-p", "all")
+    assert result.exit_code == 0
+    assert "modrinth:jei" in result.stdout
+    assert "Skipped curseforge: CurseForge rejected the API key." in result.stderr
+
+
+def test_searching_everywhere_fails_when_nothing_answers(run, catalogs):
+    catalogs["modrinth"] = Catalog(refuse=503)
+    result = run("search", "jei", "-p", "all")
+    assert result.exit_code == 1
+    assert "Skipped modrinth" in result.stderr
+    assert "Skipped curseforge" in result.stderr
+
+
+def test_summaries_stay_on_one_line(run, catalogs):
+    summary = "First line.\n\nSecond line."
+    catalogs["modrinth"] = Catalog(project("dex", summary=summary))
+    result = run("search", "dex")
+    row = next(line for line in result.stdout.splitlines() if "modrinth:dex" in line)
+    assert "First line. Second line." in row

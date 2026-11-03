@@ -5,13 +5,16 @@ from enum import StrEnum
 from typing import Annotated
 
 import typer
+from modsmith.errors import ModsmithError
 from modsmith.platforms import ProjectType, SearchResults
 from rich.table import Table
 from rich.text import Text
 
 from ..core.config import PLATFORMS
 from ..core.errors import AppError
+from ..core.platforms import explained
 from .context import AppContext, get
+from .errors import report
 
 
 class Kind(StrEnum):
@@ -72,7 +75,7 @@ def _table(results: SearchResults, title: str | None, width: int) -> Table | Non
             project.name,
             f"{project.platform}:{project.slug}",
             _count(project.downloads),
-            project.summary,
+            _one_line(project.summary),
         )
         for project in results.projects
     ]
@@ -96,6 +99,11 @@ def _table(results: SearchResults, title: str | None, width: int) -> Table | Non
     return table
 
 
+def _one_line(text: str) -> str:
+    """Join a text's lines, because some summaries hold line breaks."""
+    return " ".join(text.split())
+
+
 def _lines(results: SearchResults, title: str | None) -> Text:
     """List results one per pair of lines, for narrow terminals."""
     text = Text()
@@ -110,7 +118,7 @@ def _lines(results: SearchResults, title: str | None) -> Text:
 
 
 def _search_one(app: AppContext, name: str, query: Query, title: str | None) -> None:
-    with app.platform(name) as platform:
+    with explained(name), app.platform(name) as platform:
         results = platform.search(
             query.text,
             project_type=query.kind,
@@ -159,11 +167,15 @@ def search_command(
         if where == Where.ALL
         else [(where or app.config.default_platform)]
     )
+    failed = 0
     for name in names:
         title = name.capitalize() if len(names) > 1 else None
         try:
             _search_one(app, str(name), search, title)
-        except AppError as e:
+        except (AppError, ModsmithError) as e:
             if len(names) == 1:
                 raise
-            app.err.print(Text(f"Skipped {name}: {e.message}", style="yellow"))
+            failed += 1
+            report(e, prefix=f"Skipped {name}: ")
+    if failed == len(names):
+        raise typer.Exit(1)

@@ -3,7 +3,7 @@
 from collections.abc import Iterator
 from typing import ClassVar
 
-from modsmith.errors import PlatformError
+from modsmith.errors import NetworkError, PlatformError
 from modsmith.platforms import Platform, Project, Release, SearchResults
 
 
@@ -27,11 +27,17 @@ class Catalog(Platform):
     name: ClassVar[str] = "modrinth"
 
     def __init__(
-        self, *projects: Project, releases: tuple[Release, ...] = (), name: str = ""
+        self,
+        *projects: Project,
+        releases: tuple[Release, ...] = (),
+        name: str = "",
+        refuse: int | None = None,
     ) -> None:
+        """``refuse`` makes every search fail with that HTTP status."""
         super().__init__()
         self.projects = list(projects)
         self.releases = list(releases)
+        self.refuse = refuse
         if name:
             self.name = name
 
@@ -45,6 +51,11 @@ class Catalog(Platform):
         offset=0,
         limit=20,
     ) -> SearchResults:
+        if self.refuse is not None:
+            raise NetworkError(
+                f"GET https://{self.name}.invalid/search returned {self.refuse}",
+                self.refuse,
+            )
         found = [
             item
             for item in self.projects

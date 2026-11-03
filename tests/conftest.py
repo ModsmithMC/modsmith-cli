@@ -65,7 +65,12 @@ def run(catalogs: dict[str, Catalog]) -> Callable[..., Result]:
 
             real(name, config)
         source = catalogs[name]
-        return Catalog(*source.projects, releases=tuple(source.releases), name=name)
+        return Catalog(
+            *source.projects,
+            releases=tuple(source.releases),
+            name=name,
+            refuse=source.refuse,
+        )
 
     def invoke(*args: str) -> Result:
         services = Services(open_platform=open_platform)

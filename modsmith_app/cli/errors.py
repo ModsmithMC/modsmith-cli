@@ -10,28 +10,43 @@ from rich.text import Text
 
 from ..core.errors import AppError
 
-HINTS: list[tuple[type[ModsmithError], str]] = [
-    (
-        LockedError,
-        "Another Modsmith is changing these files. Try again when it is done.",
-    ),
-    (NetworkError, "Check your internet connection, then try again."),
-]
+BUSY = 429
+
+
+def _network_hint(error: NetworkError) -> str | None:
+    """Say what to do about a failed request, going by its status."""
+    if error.status is None:
+        return "Check your internet connection, then try again."
+    if error.status == BUSY or error.status >= 500:
+        return "The service is busy or having trouble. Try again later."
+    return None
 
 
 def describe(error: AppError | ModsmithError) -> tuple[str, str | None]:
     """Return a message and a hint for an app or library error."""
     if isinstance(error, AppError):
         return error.message, error.hint
-    hint = next((text for kind, text in HINTS if isinstance(error, kind)), None)
-    return str(error), hint
+    if isinstance(error, LockedError):
+        return str(
+            error
+        ), "Another Modsmith is changing these files. Try again when it is done."
+    if isinstance(error, NetworkError):
+        return str(error), _network_hint(error)
+    return str(error), None
 
 
-def report(error: AppError | ModsmithError) -> None:
-    """Print an error's message and hint to standard error."""
+def report(error: AppError | ModsmithError, prefix: str = "") -> None:
+    """Print an error's message and hint to standard error.
+
+    Args:
+        error: The error.
+        prefix: Shown instead of ``Error:``, for errors that did not stop the
+            command.
+    """
     message, hint = describe(error)
     console = Console(stderr=True, highlight=False)
-    console.print(Text.assemble(("Error: ", "bold red"), message), soft_wrap=True)
+    label = (prefix, "yellow") if prefix else ("Error: ", "bold red")
+    console.print(Text.assemble(label, message), soft_wrap=True)
     if hint:
         # Hints often hold a command, which must stay on one line to be copied.
         console.print(Text(hint, style="dim"), soft_wrap=True)
