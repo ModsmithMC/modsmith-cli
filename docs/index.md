@@ -1,36 +1,46 @@
-# Modsmith
+# The Modsmith command line
+
+`modsmith` installs Minecraft modpacks, mods, resource packs and shaders from
+Modrinth and CurseForge, and adds them to the official launcher. It is not a
+launcher: it never signs in or starts the game. It runs in a terminal; a
+desktop app is on its way.
 
 ```{raw} html
-<div class="hero">
-  <picture>
-    <source media="(max-width: 560px)" srcset="_static/hero-small.svg">
-    <img src="_static/hero.svg" alt="">
-  </picture>
-  <div class="hero-copy">
-    <h2>The Modsmith command line</h2>
-    <p>Install modpacks, mods, resource packs and shaders for the official Minecraft launcher, from your terminal.</p>
-    <div class="actions">
-      <a class="button primary" href="get-started/installation/">Install it</a>
-      <a class="button" href="get-started/quickstart/">Quick start</a>
-    </div>
-  </div>
+<div class="path">
+  <a href="get-started/installation/"><b>1</b><strong>Install Modsmith</strong><span>Two commands on Windows, macOS or Linux.</span></a>
+  <a href="get-started/quickstart/"><b>2</b><strong>Install your first modpack</strong><span>From a name to playing, in five minutes.</span></a>
+  <a href="guides/"><b>3</b><strong>Make it yours</strong><span>Add mods and shaders, and keep them up to date.</span></a>
 </div>
+```
 
-<div class="band center">
-  <div class="band-inner">
-    <p class="eyebrow">Guides</p>
-    <h2>What do you want to do?</h2>
-    <div class="features">
-      <a class="feature" href="guides/modpacks/"><img src="_static/pixel/package.svg" alt=""><h3>Install a modpack</h3><p>From Modrinth, CurseForge or a file, ready in the launcher.</p></a>
-      <a class="feature" href="guides/mods/"><img src="_static/pixel/puzzle.svg" alt=""><h3>Add mods and shaders</h3><p>Add, remove, turn off and pin what an instance holds.</p></a>
-      <a class="feature" href="guides/updates/"><img src="_static/pixel/refresh.svg" alt=""><h3>Keep it up to date</h3><p>Update a pack and what you added, and see what changed.</p></a>
-      <a class="feature" href="guides/curseforge/"><img src="_static/pixel/key.svg" alt=""><h3>Use CurseForge</h3><p>Set up a key, and handle files you must download by hand.</p></a>
-      <a class="feature" href="guides/existing/"><img src="_static/pixel/link.svg" alt=""><h3>Bring your own</h3><p>Take over an installation you made in the launcher.</p></a>
-      <a class="feature" href="guides/instances/"><img src="_static/pixel/wrench.svg" alt=""><h3>Manage instances</h3><p>Start empty ones, rename, move and delete them.</p></a>
-    </div>
+## What do you want to do?
+
+```{raw} html
+<div class="task-groups">
+  <div>
+    <h3>Play</h3>
+    <a href="guides/modpacks/">Install a modpack</a>
+    <a href="guides/curseforge/">Install from CurseForge</a>
+    <a href="guides/existing/">Take over an installation you made</a>
+  </div>
+  <div>
+    <h3>Change what you play</h3>
+    <a href="guides/mods/">Add mods, resource packs and shaders</a>
+    <a href="guides/mods/#turn-files-off">Turn a mod off</a>
+    <a href="guides/updates/">Update a pack and what you added</a>
+  </div>
+  <div>
+    <h3>Look things up</h3>
+    <a href="reference/commands/">Every command</a>
+    <a href="reference/settings/">Settings</a>
+    <a href="help/troubleshooting/">What a message means</a>
   </div>
 </div>
 ```
+
+Something not working? Start with [troubleshooting](help/troubleshooting.md)
+and the [questions people ask](help/faq.md). Writing your own tool in Python?
+The [library's guide](https://modsmithmc.org/modsmith-python/) is for you.
 
 ```{toctree}
 :hidden:
@@ -44,6 +54,13 @@ get-started/index
 :caption: Guides
 
 guides/index
+```
+
+```{toctree}
+:hidden:
+:caption: Concepts
+
+concepts/index
 ```
 
 ```{toctree}

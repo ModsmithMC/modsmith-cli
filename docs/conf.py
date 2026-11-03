@@ -20,10 +20,20 @@ exclude_patterns = ["_build", "assets"]
 
 html_theme = "modsmith"
 html_title = project
-html_baseurl = "https://modsmithmc.org/modsmith/"
+SITE = "https://modsmithmc.org/"
+html_baseurl = SITE + "modsmith/"
 html_theme_options = {
     "base_url": html_baseurl,
+    "home_url": SITE,
     "repository": "ModsmithMC/modsmith",
+    "site_name": "Command line",
+    "site_title": "Modsmith command line",
+    "hero_home": False,
+    "sites": [
+        ["Home", SITE, "What Modsmith is, and how to get it"],
+        ["Command line", html_baseurl, "Install modpacks, and every command"],
+        ["Python library", SITE + "modsmith-python/", "Build your own tools"],
+    ],
 }
 html_favicon = "assets/logo.svg"
 html_static_path = ["assets"]
@@ -35,6 +45,7 @@ myst_heading_anchors = 3
 modsmith_sections = {
     "get-started": "Get started",
     "guides": "Guides",
+    "concepts": "Concepts",
     "reference": "Reference",
     "help": "Help",
 }
@@ -42,6 +53,56 @@ modsmith_sections = {
 DOCS = Path(__file__).parent
 COMMANDS = DOCS / "reference" / "commands"
 TYPES = {"text": "text", "path": "path", "integer": "number", "boolean": ""}
+
+# The command index groups commands by what they are for.
+GROUPS = {
+    "Start an instance": ["install", "create", "import"],
+    "Change what it holds": [
+        "add",
+        "remove",
+        "update",
+        "enable",
+        "disable",
+        "pin",
+        "unpin",
+        "adopt",
+    ],
+    "Look things up": ["list", "show", "search", "info", "loaders"],
+    "Move and delete": ["move", "delete"],
+    "Settings": ["config"],
+}
+SEE_ALSO = {
+    "install": ["update", "add", "create", "import"],
+    "create": ["loaders", "add", "install"],
+    "import": ["adopt", "show"],
+    "add": ["remove", "search", "show"],
+    "remove": ["add", "disable"],
+    "update": ["pin", "install"],
+    "enable": ["disable", "show"],
+    "disable": ["enable", "remove"],
+    "pin": ["unpin", "update"],
+    "unpin": ["pin", "update"],
+    "adopt": ["import", "show"],
+    "list": ["show", "move"],
+    "show": ["list", "disable"],
+    "search": ["info", "add", "install"],
+    "info": ["search", "add"],
+    "loaders": ["create"],
+    "move": ["list", "delete"],
+    "delete": ["move", "list"],
+}
+# Options that a setting can also give, so the setting is named beside them.
+OPTION_SETTINGS = {
+    "--pre": "allow_prereleases",
+    "--instances-dir": "instances_dir",
+    "--game-dir": "game_dir",
+}
+EXIT_CODES = [
+    ("0", "It worked, or you answered no and nothing changed"),
+    ("1", "Something went wrong; the message says what"),
+    ("2", "The command or its options were not right; see `--help`"),
+    ("130", "Stopped with Ctrl+C; nothing was left half done"),
+]
 
 
 def write(path: Path, text: str) -> None:
@@ -81,6 +142,10 @@ def describe_param(param: Any) -> str:
         text += f" Defaults to `{getattr(default, 'value', default)}`."
     if param.param_type_name == "argument" and not param.required:
         text += " Optional."
+    opts = getattr(param, "opts", [])
+    setting = next((OPTION_SETTINGS[o] for o in opts if o in OPTION_SETTINGS), None)
+    if setting:
+        text += f" The [`{setting}` setting](../settings.md) sets it for every run."
     return f"{term}\n: {text.strip()}\n"
 
 
@@ -131,6 +196,11 @@ def command_page(path: str, command: Any) -> str:
         lines += ["## Examples", "", "```console"]
         lines += [f"$ {item}" for item in examples]
         lines += ["```", ""]
+    related = SEE_ALSO.get(path.removeprefix("modsmith "), [])
+    if related:
+        lines += ["## See also", ""]
+        lines += [f"- [`modsmith {name}`]({name}.md)" for name in related]
+        lines.append("")
     return "\n".join(lines)
 
 
@@ -163,15 +233,28 @@ def generate_reference() -> None:
         "```{toctree}",
         ":hidden:",
         "",
-        *[slug(path) for path, _ in entries],
+        # The sidebar follows the same groups as the index.
+        *[
+            slug(path)
+            for names in GROUPS.values()
+            for name in names
+            for path, _ in entries
+            if path.split()[1] == name
+        ],
         "```",
         "",
     ]
-    for path, command in entries:
-        if path.count(" ") > 1:
-            continue
-        summary = (command.help or "").strip().splitlines()[0]
-        index += [f"[`{path}`]({slug(path)}.md)", f": {summary}", ""]
+    commands = dict(entries)
+    grouped = {name for names in GROUPS.values() for name in names}
+    missing = {path.split()[1] for path in commands} - grouped
+    if missing:
+        raise ValueError(f"Add these commands to GROUPS: {sorted(missing)}")
+    for group, names in GROUPS.items():
+        index += [f"## {group}", "", "| Command | What it does |", "| --- | --- |"]
+        for name in names:
+            summary = (commands[f"modsmith {name}"].help or "").strip().splitlines()[0]
+            index.append(f"| [`modsmith {name}`]({name}.md) | {summary} |")
+        index.append("")
     index += [
         "## Options for every command",
         "",
@@ -179,6 +262,9 @@ def generate_reference() -> None:
         "",
     ]
     index += [describe_param(p) for p in options]
+    index += ["## Exit codes", "", "| Code | Meaning |", "| --- | --- |"]
+    index += [f"| `{code}` | {meaning} |" for code, meaning in EXIT_CODES]
+    index.append("")
     write(COMMANDS / "index.md", "\n".join(index))
 
     rows = ["| Setting | What it does | Variable |", "| --- | --- | --- |"]

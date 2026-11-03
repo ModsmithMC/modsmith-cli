@@ -1,37 +1,90 @@
 # Installation
 
-Modsmith runs on Windows, macOS and Linux, and needs Python 3.12 or newer.
+Modsmith runs on Windows, macOS and Linux. It is installed with
+[uv](https://docs.astral.sh/uv/), which also brings the Python it needs, so
+you do not have to install Python yourself.
 
 ## Install
 
-Install it as a tool with [uv](https://docs.astral.sh/uv/), from the
-[latest release](https://github.com/ModsmithMC/modsmith/releases/latest):
-
-```console
-$ uv tool install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+```{raw} html
+<div class="tabs" data-tabs>
+  <div class="tab-list" role="tablist">
+    <button type="button" role="tab" data-tab="windows">Windows</button>
+    <button type="button" role="tab" data-tab="macos">macOS</button>
+    <button type="button" role="tab" data-tab="linux">Linux</button>
+  </div>
+  <div class="tab-panel" role="tabpanel" data-panel="windows">
 ```
 
-Or with [pipx](https://pipx.pypa.io/):
+1. Install uv. In PowerShell:
 
-```console
-$ pipx install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+   ```powershell
+   powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+   ```
+
+2. Open a new PowerShell window, and install Modsmith:
+
+   ```powershell
+   uv tool install modsmith-cli
+   ```
+
+```{raw} html
+  </div>
+  <div class="tab-panel" role="tabpanel" data-panel="macos" hidden>
 ```
 
-Both put the `modsmith` command on your path, in its own environment. Check
-that it works:
+1. Install uv. In Terminal:
+
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. Open a new Terminal window, and install Modsmith:
+
+   ```bash
+   uv tool install modsmith-cli
+   ```
+
+```{raw} html
+  </div>
+  <div class="tab-panel" role="tabpanel" data-panel="linux" hidden>
+```
+
+1. Install uv:
+
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. Open a new terminal, and install Modsmith:
+
+   ```bash
+   uv tool install modsmith-cli
+   ```
+
+```{raw} html
+  </div>
+</div>
+```
+
+Already use [pipx](https://pipx.pypa.io/)? `pipx install modsmith-cli` works
+too.
+
+## Check that it works
 
 ```console
 $ modsmith --version
 modsmith 0.1.0
 ```
 
-## Before you start
+If the terminal says it does not know `modsmith`, open a new one, so it picks
+up the folder uv installed it to.
 
-Modsmith works with the official Minecraft launcher, and expects it to be set
-up: install it, sign in and start it once, so that it creates its game folder.
-Close it while Modsmith adds, moves or removes installations, because a running
-launcher can write over its list of installations. Modsmith checks, and asks you
-to close it.
+## Before your first modpack
+
+Modsmith works with the official Minecraft launcher. Install it, sign in, and
+start it once, so that it creates its game folder. Close it while Modsmith adds,
+moves or removes installations; Modsmith checks, and asks you to.
 
 ## Tab completion
 
@@ -41,16 +94,23 @@ Modsmith can complete commands and instance names when you press Tab:
 $ modsmith --install-completion
 ```
 
-Open a new terminal afterwards.
+Then open a new terminal.
 
-## Upgrade and uninstall
-
-To move to a newer release, install its file the same way. To remove
-Modsmith:
+## Upgrade
 
 ```console
-$ uv tool uninstall modsmith-app
+$ uv tool upgrade modsmith-cli
 ```
 
-Your instances and settings stay where they are. See
-[where things go](../guides/instances.md#where-things-go) to remove them too.
+## Uninstall
+
+```console
+$ uv tool uninstall modsmith-cli
+```
+
+Your instances and settings stay where they are. To remove them too, see
+[where things go](../concepts/instances.md#where-things-go).
+
+## Next
+
+[Install your first modpack](quickstart.md).

@@ -2,6 +2,7 @@
 
 ```{toctree}
 troubleshooting
+faq
 changelog
 ```
 
