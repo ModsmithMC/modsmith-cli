@@ -17,6 +17,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   you downloaded by hand with `--from`.
 - `create` starts an empty instance, with the recommended version of a mod
   loader unless you name one.
+- `show` lists what an instance holds and where each file came from. `add`
+  adds mods, resource packs and shaders with what they need, and `remove`
+  takes them away with the dependencies nothing else needs. `enable`,
+  `disable`, `pin`, `unpin` and `adopt` manage what is there.
+- `info` shows a project's details, newest releases and changelog, and
+  `loaders` lists a mod loader's versions.
 - `search --sort` orders results by relevance, downloads, popularity, newest or
   last update.
 - `--color` and `NO_COLOR` control colour. Help shows examples.

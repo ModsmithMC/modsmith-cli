@@ -10,7 +10,18 @@ from rich.logging import RichHandler
 from .. import __version__
 from ..core.paths import AppPaths
 from .config_cmd import config_app
+from .contents_cmd import (
+    add_command,
+    adopt_command,
+    disable_command,
+    enable_command,
+    pin_command,
+    remove_command,
+    show_command,
+    unpin_command,
+)
 from .context import AppContext, ColorMode, Services
+from .discovery_cmd import info_command, loaders_command
 from .errors import reported
 from .install_cmd import create_command, install_command
 from .list_cmd import list_command
@@ -113,6 +124,57 @@ app.command(
         "modsmith search jei --platform all --minecraft 1.20.1 --loader forge",
     ),
 )(reported(search_command))
+app.command("show", epilog=examples("modsmith show", "modsmith show survival"))(
+    reported(show_command)
+)
+app.command(
+    "add",
+    epilog=examples(
+        "modsmith add survival sodium lithium",
+        "modsmith add survival curseforge:jei",
+        "modsmith add survival complementary-reimagined --type shader",
+    ),
+)(reported(add_command))
+app.command(
+    "remove",
+    epilog=examples(
+        "modsmith remove survival sodium", "modsmith remove iris --keep-deps"
+    ),
+)(reported(remove_command))
+app.command("enable", epilog=examples("modsmith enable survival sodium"))(
+    reported(enable_command)
+)
+app.command(
+    "disable",
+    epilog=examples(
+        "modsmith disable survival sodium",
+        "modsmith disable survival mods/OptiFine.jar",
+    ),
+)(reported(disable_command))
+app.command("pin", epilog=examples("modsmith pin survival sodium"))(
+    reported(pin_command)
+)
+app.command("unpin", epilog=examples("modsmith unpin survival sodium"))(
+    reported(unpin_command)
+)
+app.command(
+    "adopt",
+    epilog=examples("modsmith adopt survival", "modsmith adopt survival -p modrinth"),
+)(reported(adopt_command))
+app.command(
+    "info",
+    epilog=examples(
+        "modsmith info sodium",
+        "modsmith info curseforge:jei --minecraft 1.20.1 --loader forge",
+        "modsmith info fabulously-optimized --type modpack",
+    ),
+)(reported(info_command))
+app.command(
+    "loaders",
+    epilog=examples(
+        "modsmith loaders fabric 1.21.1", "modsmith loaders forge 1.20.1 --all"
+    ),
+)(reported(loaders_command))
 app.add_typer(config_app, name="config")
 
 
