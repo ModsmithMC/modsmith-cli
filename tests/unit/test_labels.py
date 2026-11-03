@@ -1,4 +1,4 @@
-from modsmith_app.cli.install_cmd import loader_label
+from modsmith_cli.commands.install import loader_label
 
 
 def test_loader_labels():

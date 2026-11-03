@@ -3,8 +3,8 @@ import dataclasses
 import pytest
 from modsmith.instances import Instance
 
-from modsmith_app.core.errors import AppError
-from modsmith_app.core.registry import (
+from modsmith_cli.core.errors import AppError
+from modsmith_cli.core.registry import (
     external_paths,
     list_instances,
     locate,

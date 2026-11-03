@@ -1,4 +1,4 @@
-"""Modsmith: modpacks, mods and packs for the official Minecraft launcher."""
+"""Modsmith's command line: modpacks, mods and packs for the official Minecraft launcher."""
 
 from importlib.metadata import PackageNotFoundError, version
 

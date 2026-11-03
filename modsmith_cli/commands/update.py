@@ -11,6 +11,7 @@ from modsmith.minecraft import GameDir
 from modsmith.packs import Modpack
 from rich.text import Text
 
+from ..context import AppContext, get
 from ..core.install import (
     FetchedPack,
     check_launcher,
@@ -25,9 +26,10 @@ from ..core.platforms import explained
 from ..core.records import Record, read_record, write_record
 from ..core.refs import LocalPack
 from ..core.registry import resolve_instance
-from .context import AppContext, get
-from .errors import report as report_error
-from .install_cmd import (
+from ..errors import report as report_error
+from ..target import DryRun, InstanceName, Yes
+from ..ui import cancellable, confirm, progress, show_changelog, show_plan
+from .install import (
     AllOptional,
     From,
     Optional,
@@ -35,8 +37,6 @@ from .install_cmd import (
     choose_optional,
     loader_label,
 )
-from .target import DryRun, InstanceName, Yes
-from .ui import cancellable, confirm, progress, show_changelog, show_plan
 
 CHANGELOG_LINES = 6
 

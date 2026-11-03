@@ -5,9 +5,9 @@ import pytest
 from modsmith.instances import Changes
 from rich.console import Console
 
-from modsmith_app.cli.context import AppContext, Services
-from modsmith_app.cli.ui import cancellable, confirm, confirm_name, show_plan
-from modsmith_app.core.errors import AppError
+from modsmith_cli.context import AppContext, Services
+from modsmith_cli.core.errors import AppError
+from modsmith_cli.ui import cancellable, confirm, confirm_name, show_plan
 
 
 def make_app(paths, *, interactive=False, verbose=0) -> tuple[AppContext, io.StringIO]:

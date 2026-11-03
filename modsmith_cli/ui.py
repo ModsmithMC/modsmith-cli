@@ -19,8 +19,8 @@ from rich.progress import (
 from rich.progress import Progress as Bars
 from rich.text import Text
 
-from ..core.errors import AppError
 from .context import AppContext
+from .core.errors import AppError
 
 # How many paths of each kind a plan lists before summing up the rest.
 SHOWN_PER_KIND = 12

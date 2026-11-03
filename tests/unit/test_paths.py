@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from modsmith_app.core.paths import AppPaths
+from modsmith_cli.core.paths import AppPaths
 
 
 def test_home_variable_puts_everything_in_one_folder(tmp_path):

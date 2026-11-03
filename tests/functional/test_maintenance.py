@@ -3,7 +3,7 @@ import json
 import pytest
 from modsmith.instances import Instance
 
-from modsmith_app.core.records import read_record
+from modsmith_cli.core.records import read_record
 from tests.lib.builders import pack_file, served_file, write_mrpack
 from tests.lib.catalog import project, release
 

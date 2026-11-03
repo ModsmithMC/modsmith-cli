@@ -4,10 +4,10 @@ from typing import Annotated
 
 import typer
 
-from ..core.config import load_config
-from ..core.errors import AppError
-from ..core.paths import AppPaths
-from ..core.registry import list_instances
+from .core.config import load_config
+from .core.errors import AppError
+from .core.paths import AppPaths
+from .core.registry import list_instances
 
 # Click rewraps help text, except a paragraph whose first line is this mark.
 KEEP_LINES = "\b"

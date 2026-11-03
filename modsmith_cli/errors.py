@@ -18,7 +18,7 @@ from modsmith.platforms import Release
 from rich.console import Console
 from rich.text import Text
 
-from ..core.errors import AppError
+from .core.errors import AppError
 
 BUSY = 429
 # The exit status of a command stopped with Ctrl+C, as shells expect.

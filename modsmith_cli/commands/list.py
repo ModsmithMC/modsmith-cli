@@ -5,9 +5,9 @@ from modsmith.instances import InstanceState
 from rich.table import Table
 from rich.text import Text
 
+from ..context import get
 from ..core.registry import list_instances
-from .context import get
-from .install_cmd import loader_label
+from .install import loader_label
 
 
 def _loader(state: InstanceState) -> str:

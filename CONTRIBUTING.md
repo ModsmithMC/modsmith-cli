@@ -26,8 +26,9 @@ uv pip install -e ../CurseCraft
 
 | Folder | Holds |
 | :--- | :--- |
-| `modsmith_app/core` | What the command line and the GUI share. It never prints or asks. |
-| `modsmith_app/cli` | The `modsmith` command, built with Typer and Rich. |
+| `modsmith_cli/core` | Settings, paths, instance records and install planning. It never prints or asks, so the desktop app can use it too. |
+| `modsmith_cli/commands` | One module per group of commands, built with Typer. |
+| `modsmith_cli` | `app.py` puts the commands together; `ui.py`, `context.py`, `errors.py` and `target.py` hold what they share, printed with Rich. |
 
 The app uses only the library's public API.
 

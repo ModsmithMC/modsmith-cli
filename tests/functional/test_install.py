@@ -2,7 +2,7 @@ import json
 
 from modsmith.instances import Instance
 
-from modsmith_app.core.records import PackSource, read_record
+from modsmith_cli.core.records import PackSource, read_record
 from tests.lib.builders import (
     install_vanilla,
     pack_file,

@@ -1,7 +1,7 @@
 from modsmith.instances import Instance
 
-from modsmith_app import __version__
-from modsmith_app.core.registry import remember_external
+from modsmith_cli import __version__
+from modsmith_cli.core.registry import remember_external
 from tests.lib.catalog import Catalog, project
 
 

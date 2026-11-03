@@ -1,6 +1,6 @@
 import io
 
-from modsmith_app.cli.app import tolerate_unencodable
+from modsmith_cli.app import tolerate_unencodable
 
 
 def test_unencodable_characters_become_question_marks():

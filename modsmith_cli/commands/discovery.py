@@ -9,13 +9,13 @@ from modsmith.errors import UnsupportedError
 from rich.table import Table
 from rich.text import Text
 
+from ..context import get
 from ..core.errors import AppError
 from ..core.platforms import explained
 from ..core.refs import parse_project
-from .context import get
-from .install_cmd import LOADER_HINT, LOADER_NAMES
-from .search_cmd import KINDS, Kind
-from .ui import show_changelog
+from ..ui import show_changelog
+from .install import LOADER_HINT, LOADER_NAMES
+from .search import KINDS, Kind
 
 RELEASES_SHOWN = 5
 LOADERS_SHOWN = 15
