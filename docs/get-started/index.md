@@ -1,10 +1,22 @@
 # Get started
 
-Modsmith prepares the game files and adds an installation to the official
-Minecraft launcher. It never signs in or starts the game: you choose the
-installation in the launcher and play.
+Install Modsmith, then install your first modpack.
+
+:::{container} cards
+
+- ![](../assets/pixel/download.svg) [Installation](installation.md)
+
+  Install Modsmith on Windows, macOS or Linux, and check that it works.
+
+- ![](../assets/pixel/flag.svg) [Quick start](quickstart.md)
+
+  From a modpack's name to playing it, in five minutes.
+
+:::
 
 ```{toctree}
+:hidden:
+
 installation
 quickstart
 ```

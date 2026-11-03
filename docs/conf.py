@@ -1,8 +1,11 @@
 """Sphinx configuration for the command line's guide."""
 
+import re
 from pathlib import Path
 from typing import Any
+from urllib.parse import urljoin
 
+from sphinx.application import Sphinx
 from typer.main import get_command
 
 import modsmith_app
@@ -28,7 +31,6 @@ html_theme_options = {
     "repository": "ModsmithMC/modsmith",
     "site_name": "Command line",
     "site_title": "Modsmith command line",
-    "hero_home": False,
     "sites": [
         ["Home", SITE, "What Modsmith is, and how to get it"],
         ["Command line", html_baseurl, "Install modpacks, and every command"],
@@ -182,9 +184,11 @@ def command_page(path: str, command: Any) -> str:
         if p.param_type_name == "option" and not p.hidden and p.name != "help"
     ]
     if arguments:
-        lines += ["## Arguments", ""] + [describe_param(p) for p in arguments]
+        lines += ["## Arguments", "", ":::{container} options", ""]
+        lines += [describe_param(p) for p in arguments] + [":::", ""]
     if options:
-        lines += ["## Options", ""] + [describe_param(p) for p in options]
+        lines += ["## Options", "", ":::{container} options", ""]
+        lines += [describe_param(p) for p in options] + [":::", ""]
     if hasattr(command, "commands"):
         lines += ["## Commands", ""]
         for name, sub in command.commands.items():
@@ -207,6 +211,40 @@ def command_page(path: str, command: Any) -> str:
 def slug(path: str) -> str:
     """Name a command's page, such as ``config-set`` for ``modsmith config set``."""
     return path.removeprefix("modsmith ").replace(" ", "-")
+
+
+# Links to a command's page, and the page itself, are marked as commands.
+LINK = re.compile(r'(<a [^>]*href="([^"]+)"[^>]*)>')
+COMMANDS_PATH = "reference/commands/"
+
+
+def mark_commands(
+    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: Any
+) -> None:
+    """Give command pages and the links to them a ``cmd`` kind badge."""
+    # Links are relative, so each is read from the page's own address.
+    base = "/" if pagename == "index" else f"/{pagename.removesuffix('/index')}/"
+
+    def mark(match: re.Match[str]) -> str:
+        target = urljoin(base, match[2]).split("#")[0].strip("/")
+        if target.startswith(COMMANDS_PATH) and target != COMMANDS_PATH.rstrip("/"):
+            return f'{match[1]} data-kind="cmd">'
+        return match[0]
+
+    for key in ("body", "section_nav"):
+        if context.get(key):
+            context[key] = LINK.sub(mark, context[key])
+    page = pagename.removeprefix("reference/commands/")
+    if page != pagename and page != "index":
+        context["body"] = context["body"].replace(
+            "<h1>", '<h1><span class="kind" data-kind="cmd">command</span>', 1
+        )
+
+
+def setup(app: Sphinx) -> None:
+    """Register the build hooks."""
+    # After the theme has built the section's sidebar, which this marks up too.
+    app.connect("html-page-context", mark_commands, priority=600)
 
 
 def generate_reference() -> None:
@@ -261,7 +299,8 @@ def generate_reference() -> None:
         "These go before the command, as in `modsmith --verbose update`.",
         "",
     ]
-    index += [describe_param(p) for p in options]
+    index += [":::{container} options", ""]
+    index += [describe_param(p) for p in options] + [":::", ""]
     index += ["## Exit codes", "", "| Code | Meaning |", "| --- | --- |"]
     index += [f"| `{code}` | {meaning} |" for code, meaning in EXIT_CODES]
     index.append("")
