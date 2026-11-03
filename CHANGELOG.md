@@ -11,16 +11,17 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Modsmith is on PyPI as `modsmith-cli`: `uv tool install modsmith-cli`.
-- A guide at [modsmithmc.org/modsmith](https://modsmithmc.org/modsmith/),
+- A guide at [modsmithmc.org/modsmith-cli](https://modsmithmc.org/modsmith-cli/),
   with a page for every command and setting.
 
 ### Changed
 
-- The project moved to [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith).
+- The project moved to [ModsmithMC/modsmith-cli](https://github.com/ModsmithMC/modsmith-cli).
 - The package is now called `modsmith-cli`; the command is still `modsmith`.
   If you installed 0.1.0 from its wheel, remove it first with
   `uv tool uninstall modsmith-app` (or `pipx uninstall modsmith-app`). Your
   instances and settings stay where they are.
+- The Python package is `modsmith_cli`, so `python -m modsmith_cli` runs it.
 
 ## [0.1.0] - 2026-11-03
 

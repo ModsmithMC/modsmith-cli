@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ModsmithMC/modsmith/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ModsmithMC/modsmith/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
+  <a href="https://github.com/ModsmithMC/modsmith-cli/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ModsmithMC/modsmith-cli/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
   <a href="https://pypi.org/project/modsmith-cli/"><img src="https://img.shields.io/pypi/v/modsmith-cli?style=flat-square&color=3c8527" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+"></a>
   <img src="https://img.shields.io/badge/status-alpha-orange?style=flat-square" alt="Alpha">
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://modsmithmc.org/">Website</a> · <a href="https://modsmithmc.org/modsmith/">Documentation</a> · <strong>English</strong> · <a href="README_ZH.md">简体中文</a>
+  <a href="https://modsmithmc.org/">Website</a> · <a href="https://modsmithmc.org/modsmith-cli/">Documentation</a> · <strong>English</strong> · <a href="README_ZH.md">简体中文</a>
 </p>
 
 ---
@@ -221,7 +221,7 @@ The command line is built on the Python library, which does the real work: platf
 
 | | What it is | Code |
 | :--- | :--- | :--- |
-| [Command line](https://modsmithmc.org/modsmith/) | Modpacks from your terminal | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
+| [Command line](https://modsmithmc.org/modsmith-cli/) | Modpacks from your terminal | [ModsmithMC/modsmith-cli](https://github.com/ModsmithMC/modsmith-cli) |
 | [Python library](https://modsmithmc.org/modsmith-python/) | Build your own modpack tools | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
 | [Website](https://modsmithmc.org/) | The project's home | [ModsmithMC/modsmithmc.github.io](https://github.com/ModsmithMC/modsmithmc.github.io) |
 

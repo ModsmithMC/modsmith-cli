@@ -26,11 +26,11 @@ exclude_patterns = ["_build", "assets"]
 html_theme = "modsmith"
 html_title = project
 SITE = "https://modsmithmc.org/"
-html_baseurl = SITE + "modsmith/"
+html_baseurl = SITE + "modsmith-cli/"
 html_theme_options = {
     "base_url": html_baseurl,
     "home_url": SITE,
-    "repository": "ModsmithMC/modsmith",
+    "repository": "ModsmithMC/modsmith-cli",
     "site_name": "Command line",
     "site_title": "Modsmith command line",
     "sites": [
