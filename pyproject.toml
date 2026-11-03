@@ -54,7 +54,7 @@ default-groups = ["dev"]
 
 # The app follows the library's development branch until the next release.
 [tool.uv.sources]
-modsmith = { git = "https://github.com/PaPa-jun/Modsmith", branch = "refactor/architecture" }
+modsmith = { git = "https://github.com/PaPa-jun/Modsmith", branch = "develop" }
 
 [build-system]
 requires = ["hatchling"]

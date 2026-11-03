@@ -358,7 +358,7 @@ wheels = [
 [[package]]
 name = "modsmith"
 version = "0.3.0"
-source = { git = "https://github.com/PaPa-jun/Modsmith?branch=refactor%2Farchitecture#b86a49e69846a7d8f3a767480db77631e53c545b" }
+source = { git = "https://github.com/PaPa-jun/Modsmith?branch=develop#fd749bc825d0fd2b226052f4debd8fa131f52644" }
 dependencies = [
     { name = "filelock" },
     { name = "platformdirs" },
@@ -402,7 +402,7 @@ typing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "modsmith", git = "https://github.com/PaPa-jun/Modsmith?branch=refactor%2Farchitecture" },
+    { name = "modsmith", git = "https://github.com/PaPa-jun/Modsmith?branch=develop" },
     { name = "platformdirs", specifier = ">=4.3" },
     { name = "rich", specifier = ">=13.9" },
     { name = "tomli-w", specifier = ">=1.1" },
