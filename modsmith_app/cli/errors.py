@@ -14,6 +14,7 @@ from modsmith.errors import (
     NetworkError,
     UnresolvedEntriesError,
 )
+from modsmith.platforms import Release
 from rich.console import Console
 from rich.text import Text
 
@@ -57,7 +58,12 @@ def _unresolved(error: UnresolvedEntriesError) -> Report:
         page = f"  download it from {entry.manual_url}" if entry.manual_url else ""
         details.append(f"{name}{page}")
     return Report(
-        f"{len(error.entries)} files cannot be downloaded automatically.",
+        (
+            "1 file cannot"
+            if len(error.entries) == 1
+            else f"{len(error.entries)} files cannot"
+        )
+        + " be downloaded automatically.",
         "Download them by hand into one folder, then run the command again "
         "with --from <folder>.",
         details,
@@ -65,19 +71,30 @@ def _unresolved(error: UnresolvedEntriesError) -> Report:
 
 
 def _dependencies(error: DependencyError) -> Report:
-    resolution = error.plan.resolution
+    plan = error.plan
+    resolution = plan.resolution
+    names = {item.project_id: item.name for item in plan.additions}
+
+    def named(release: Release) -> str:
+        name = names.get(release.project_id)
+        return f"{name} {release.version}" if name and release.version else release.name
+
     details = [
-        f"{item.release.name} cannot be used with {item.chosen.name}"
+        f"{named(item.release)} cannot be used with {named(item.chosen)}"
         for item in resolution.conflicts
     ]
     details += [
-        f"{item.release.name} needs "
-        f"{item.dependency.project_id or item.dependency.release_id}, "
-        "which has no release for this instance"
+        f"{named(item.release)} needs "
+        + (
+            item.project.name
+            if item.project
+            else str(item.dependency.project_id or item.dependency.release_id)
+        )
+        + ", which has no release for this instance"
         for item in resolution.missing
         if item.dependency.kind == "required"
     ]
-    return Report("Nothing was installed, because of these problems.", None, details)
+    return Report("This cannot be installed, because of these problems.", None, details)
 
 
 def describe(error: AppError | ModsmithError) -> Report:

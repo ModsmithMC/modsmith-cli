@@ -130,7 +130,11 @@ class Catalog(Platform):
         for item in self.projects:
             if str(ref) in (item.id, item.slug):
                 return item
-        raise PlatformError(f"Unknown project {ref}")
+        # As the real platforms do: CurseForge searches for slugs and says when
+        # none matches, Modrinth answers 404 with the name in the URL.
+        if self.name == "curseforge":
+            raise PlatformError(f"No CurseForge project found for {ref}")
+        raise NetworkError(f"GET https://catalog.test/project/{ref} returned 404", 404)
 
     def iter_releases(
         self, project, *, game_version=None, loader=None, release_only=False

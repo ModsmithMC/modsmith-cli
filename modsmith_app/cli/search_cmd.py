@@ -12,7 +12,7 @@ from rich.text import Text
 
 from ..core.config import PLATFORMS
 from ..core.errors import AppError
-from ..core.platforms import explained
+from ..core.platforms import explained, platform_title
 from .context import AppContext, get
 from .errors import report
 
@@ -157,7 +157,7 @@ def _search_one(app: AppContext, name: str, query: Query, title: str | None) -> 
         if results.total > shown:
             app.err.print(f"Showing {shown} of {results.total}.", style="dim")
     else:
-        app.out.print(Text(f"Nothing found on {name}.", style="dim"))
+        app.out.print(Text(f"Nothing found on {platform_title(name)}.", style="dim"))
 
 
 def search_command(
@@ -193,9 +193,9 @@ def search_command(
     )
     failed = 0
     for name in names:
-        title = name.capitalize() if len(names) > 1 else None
+        heading = platform_title(name) if len(names) > 1 else None
         try:
-            _search_one(app, str(name), search, title)
+            _search_one(app, str(name), search, heading)
         except (AppError, ModsmithError) as e:
             if len(names) == 1:
                 raise

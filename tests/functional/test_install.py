@@ -171,9 +171,43 @@ def test_curseforge_files_to_download_by_hand(run, game, tmp_path, catalogs):
     path = write_curseforge_pack(tmp_path / "cf.zip", [(10, 20)])
     result = run("install", str(path), "--yes")
     assert result.exit_code == 1
-    assert "1 files cannot be downloaded automatically." in result.stderr
+    assert "1 file cannot be downloaded automatically." in result.stderr
     assert "curseforge file 20" in result.stderr
     assert "--from <folder>" in result.stderr
+
+
+def test_a_dry_run_lists_files_to_download_by_hand(run, game, tmp_path, catalogs):
+    catalogs["curseforge"] = Catalog(name="curseforge")
+    path = write_curseforge_pack(tmp_path / "cf.zip", [(10, 20)])
+    result = run("install", str(path), "--dry-run")
+    assert result.exit_code == 0, result.output
+    assert "Install Curse Pack 2.0 as curse-pack" in result.stdout
+    assert "Before you install: 1 file cannot be downloaded" in result.stderr
+
+
+def test_a_second_install_of_a_pack_gets_its_own_launcher_name(
+    run, server, game, tmp_path
+):
+    path = str(simple_pack(server, tmp_path))
+    run("install", path, "-y")
+
+    result = run("install", path, "--name", "second", "-y")
+
+    assert result.exit_code == 0, result.output
+    assert profiles(game)["modsmith-second"]["name"] == "Test Pack (second)"
+    assert "choose the Test Pack (second) installation" in result.stdout
+    assert profiles(game)["modsmith-test-pack"]["name"] == "Test Pack"
+
+
+def test_create_explains_unknown_loaders_and_versions(run, game):
+    result = run("create", "odd", "-m", "1.21.1", "-l", "optifine", "-y")
+    assert result.exit_code == 1
+    assert "Modsmith cannot install 'optifine'." in result.stderr
+
+    result = run("create", "old", "-m", "0.30", "-l", "test-loader", "-y")
+    assert result.exit_code == 1
+    assert "test-loader has no version for Minecraft 0.30." in result.stderr
+    assert "Create old" not in result.stdout
 
 
 def test_a_vanilla_pack_installs_plain_minecraft(run, server, game, config, tmp_path):

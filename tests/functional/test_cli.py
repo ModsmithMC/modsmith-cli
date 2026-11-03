@@ -42,7 +42,7 @@ def test_list_shows_versions_loaders_and_packs(run, config, paths, tmp_path):
     lines = result.stdout.splitlines()
     survival = next(line for line in lines if line.startswith("survival"))
     assert "1.21.1" in survival
-    assert "fabric 0.16.10" in survival
+    assert "Fabric 0.16.10" in survival
     plain = next(line for line in lines if line.startswith("plain"))
     assert "vanilla" in plain
     assert "old-world" in result.stdout
@@ -132,7 +132,7 @@ def test_search_says_when_there_is_more(run, catalogs):
 def test_search_with_no_results(run):
     result = run("search", "nothing")
     assert result.exit_code == 0
-    assert "Nothing found on modrinth." in result.stdout
+    assert "Nothing found on Modrinth." in result.stdout
 
 
 def test_curseforge_needs_a_key(run):

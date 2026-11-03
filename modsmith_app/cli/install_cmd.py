@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
-from modsmith.errors import InstanceError, UnresolvedEntriesError
+from modsmith.errors import InstanceError, UnresolvedEntriesError, UnsupportedError
 from modsmith.instances import Instance
 from modsmith.loaders import Loader, create, recommended
-from modsmith.minecraft import GameDir, install_version
+from modsmith.minecraft import GameDir, install_version, list_versions
 from modsmith.packs import Modpack
 
 from ..core.config import Config
@@ -19,13 +19,16 @@ from ..core.install import (
     match_optional,
     optional_entries,
     profile_key,
+    profile_name,
     project_icon,
     with_optional,
 )
 from ..core.names import check_name, name_from
+from ..core.platforms import explained
 from ..core.records import Record, write_record
-from ..core.refs import parse_pack
+from ..core.refs import ProjectRef, parse_pack
 from .context import AppContext, get
+from .errors import report as report_error
 from .target import DryRun, Yes
 from .ui import cancellable, confirm, progress, show_plan
 
@@ -168,7 +171,10 @@ def install_command(
     launcher = (
         None if dry_run else check_launcher(game, app.services.launcher_running())
     )
-    with cancellable() as token, progress(app) as report:
+    platform, wanted = (
+        (ref.platform, [ref.name]) if isinstance(ref, ProjectRef) else ("", [])
+    )
+    with cancellable() as token, progress(app) as report, explained(platform, wanted):
         fetched = fetch_pack(
             ref,
             app.platform,
@@ -181,7 +187,7 @@ def install_command(
     chosen = choose_optional(app, fetched.pack, optional or [], all_optional, yes)
     pack = with_optional(fetched.pack, chosen)
     missing = [entry for entry in pack.unresolved if entry.wanted("client")]
-    if missing and not from_folders:
+    if missing and not from_folders and not dry_run:
         raise UnresolvedEntriesError(missing)
 
     instance = Instance(path)
@@ -192,6 +198,10 @@ def install_command(
         f"{loader_label(pack.loader_kind, pack.loader_version)}, "
         "and an installation in the official launcher."
     )
+    if missing and not from_folders:
+        report_error(
+            UnresolvedEntriesError(missing), app.err, prefix="Before you install: "
+        )
     if dry_run or launcher is None:
         return
     confirm(app, "Install it?", yes=yes)
@@ -202,32 +212,75 @@ def install_command(
         instance.sync(
             pack, adopt_from=from_folders or (), progress=report, cancel=token
         )
+    key = profile_key(path.name)
+    shown = profile_name(launcher, pack.name, key, path.name)
     key = launcher.add_profile(
-        pack.name,
+        shown,
         version_id,
         instance.path,
-        key=profile_key(path.name),
+        key=key,
         memory_mb=pack.memory_mb,
         icon=project_icon(fetched.project),
     )
     write_record(instance.path, Record(fetched.source, key, tuple(chosen)))
     app.out.print(
         f"Installed {pack.name} as {path.name}. In the official launcher, "
-        f"choose the {pack.name} installation and play."
+        f"choose the {shown} installation and play."
     )
+
+
+LOADER_HINT = "Use fabric, quilt, forge or neoforge."
+
+
+def _registered(kind: str, minecraft: str) -> bool:
+    """Return whether the library knows a loader by this name."""
+    try:
+        create(kind, "0", minecraft)
+    except UnsupportedError:
+        return False
+    return True
 
 
 def _pick_loader(
     kind: str | None, version: str | None, minecraft: str
 ) -> Loader | None:
-    """Return the loader to install, choosing a version if none was given."""
+    """Return the loader to install, choosing a version if none was given.
+
+    Raises:
+        AppError: The loader is unknown, or has no version for this Minecraft.
+    """
     if version and not kind:
         raise AppError("--loader-version needs --loader too.")
     if not kind:
         return None
-    if version:
-        return create(kind, version, minecraft)
-    return recommended(kind, minecraft)
+    try:
+        if version:
+            return create(kind, version, minecraft)
+        return recommended(kind, minecraft)
+    except UnsupportedError as e:
+        if not _registered(kind, minecraft):
+            raise AppError(
+                f"Modsmith cannot install {kind!r}.", hint=LOADER_HINT
+            ) from e
+        raise AppError(
+            f"{loader_label(kind, None)} has no version for Minecraft {minecraft}.",
+            hint="Check the Minecraft version, or choose another loader.",
+        ) from e
+
+
+def _check_minecraft(game: GameDir, minecraft: str) -> None:
+    """Make sure a Minecraft version exists before planning around it.
+
+    Raises:
+        AppError: Mojang has no such version.
+    """
+    if game.has_version(minecraft):
+        return
+    if not any(item.id == minecraft for item in list_versions()):
+        raise AppError(
+            f"There is no Minecraft {minecraft}.",
+            hint="Use a version such as 1.21.1. Snapshots work too.",
+        )
 
 
 def create_command(
@@ -261,6 +314,8 @@ def create_command(
         None if dry_run else check_launcher(game, app.services.launcher_running())
     )
     chosen = _pick_loader(loader, loader_version, minecraft)
+    if chosen is None:
+        _check_minecraft(game, minecraft)
     label = loader_label(
         chosen.kind if chosen else None, chosen.version if chosen else None
     )
@@ -286,7 +341,10 @@ def create_command(
         loader=chosen.kind if chosen else None,
         loader_version=chosen.version if chosen else None,
     )
-    key = launcher.add_profile(name, version_id, path, key=profile_key(name))
+    key = profile_key(name)
+    key = launcher.add_profile(
+        profile_name(launcher, name, key, name), version_id, path, key=key
+    )
     write_record(path, Record(profile=key))
     app.out.print(
         f"Created {name}. In the official launcher, choose the {name} installation."

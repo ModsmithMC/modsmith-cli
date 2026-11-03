@@ -9,10 +9,11 @@ from modsmith.errors import UnsupportedError
 from rich.table import Table
 from rich.text import Text
 
+from ..core.errors import AppError
 from ..core.platforms import explained
 from ..core.refs import parse_project
 from .context import get
-from .install_cmd import LOADER_NAMES
+from .install_cmd import LOADER_HINT, LOADER_NAMES
 from .search_cmd import KINDS, Kind
 from .ui import show_changelog
 
@@ -49,7 +50,7 @@ def info_command(
     """Show a project's details, its newest releases and what changed last."""
     app = get(ctx)
     ref = parse_project(project, app.config.default_platform)
-    with explained(ref.platform), app.platform(ref.platform) as platform:
+    with explained(ref.platform, [ref.name]), app.platform(ref.platform) as platform:
         found = platform.get_project(ref.name, project_type=KINDS[kind])
         releases = list(
             islice(
@@ -122,7 +123,10 @@ def loaders_command(
 ) -> None:
     """List a mod loader's versions for a Minecraft version."""
     app = get(ctx)
-    found = loaders.versions(kind.lower(), minecraft)
+    try:
+        found = loaders.versions(kind.lower(), minecraft)
+    except UnsupportedError as e:
+        raise AppError(f"Modsmith cannot install {kind!r}.", hint=LOADER_HINT) from e
     name = LOADER_NAMES.get(kind.lower(), kind)
     if not found:
         app.out.print(f"{name} has no versions for Minecraft {minecraft}.")

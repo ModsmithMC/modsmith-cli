@@ -1,7 +1,7 @@
 """How commands talk to the player: plans, confirmation, progress and Ctrl+C."""
 
 import signal
-from collections.abc import Generator, Mapping
+from collections.abc import Generator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from types import FrameType
@@ -63,6 +63,7 @@ def show_plan(
     sizes: Mapping[str, int | None] | None = None,
     *,
     title: str | None = None,
+    notes: Sequence[Text] = (),
 ) -> bool:
     """Print what a change would do. Returns False if it would change nothing.
 
@@ -71,6 +72,7 @@ def show_plan(
         changes: The changes, from a library diff or plan.
         sizes: The download size of each path, where known.
         title: A heading for the plan.
+        notes: Lines to print after the changes and before the summary.
     """
     rows = [
         PlanRow("+", "green", "add", changes.added),
@@ -90,6 +92,8 @@ def show_plan(
             app.out.print(Text(f"  {row.symbol} and {hidden} more", style=row.style))
     for path in changes.superseded:
         app.out.print(Text.assemble(("  = ", "dim"), f"{path} is now part of the pack"))
+    for note in notes:
+        app.out.print(note)
     counts = [f"{len(row.paths)} to {row.label}" for row in rows[:3] if row.paths]
     kept = len(changes.conflicts) + len(changes.orphaned)
     if kept:

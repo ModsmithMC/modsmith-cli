@@ -114,7 +114,7 @@ def test_update_keeps_optional_choices(run, config, game, packs):
     packs("3", [("a.jar", b"a", None), ("other.jar", b"o", OPTIONAL)])
     result = run("update", "-y")
     assert result.exit_code == 0, result.output
-    assert "1 optional files you chose are not in this release." in result.stderr
+    assert "1 optional file you chose is not in this release." in result.stderr
     assert not (folder / "mods" / "other.jar").exists()
 
 
@@ -298,6 +298,21 @@ def test_move_and_rename(run, game, config, survival, tmp_path):
     assert result.exit_code == 1
     assert "already exists" in result.stderr
     assert "cannot be an instance name" in run("move", "creative", "no?pe").stderr
+
+
+def test_renaming_an_imported_instance_keeps_it_in_place(run, game, tmp_path):
+    folder = tmp_path / "games" / "fabric-world"
+    folder.mkdir(parents=True)
+    fabric_install(game, folder)
+    run("import", "My Fabric", "-y")
+
+    result = run("move", "fabric-world", "renamed")
+
+    assert result.exit_code == 0, result.output
+    assert "Moved fabric-world to renamed." in result.stdout
+    assert (tmp_path / "games" / "renamed" / ".modsmith").is_dir()
+    assert profiles(game)["abc123"]["gameDir"] == str(tmp_path / "games" / "renamed")
+    assert run("show", "renamed").exit_code == 0
 
 
 def test_delete(run, game, config, survival):

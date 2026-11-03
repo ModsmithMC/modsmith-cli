@@ -26,6 +26,7 @@ from ..core.records import Record, read_record, write_record
 from ..core.refs import LocalPack
 from ..core.registry import resolve_instance
 from .context import AppContext, get
+from .errors import report as report_error
 from .install_cmd import (
     AllOptional,
     From,
@@ -124,7 +125,12 @@ def _kept_choice(app: AppContext, pack: Modpack, record: Record) -> tuple[str, .
     gone = len(record.optional) - len(kept)
     if gone:
         app.err.print(
-            f"{gone} optional files you chose are not in this release. "
+            (
+                "1 optional file you chose is"
+                if gone == 1
+                else f"{gone} optional files you chose are"
+            )
+            + " not in this release. "
             "Choose again with --optional.",
             style="yellow",
         )
@@ -269,12 +275,19 @@ def update_command(
         file, optional or [], all_optional, pre or app.config.allow_prereleases, yes
     )
     pack = None if additions_only else _pack_update(app, instance, state, choices)
-    if pack is not None:
-        missing = [entry for entry in pack.pack.unresolved if entry.wanted("client")]
-        if missing and not from_folders:
-            raise UnresolvedEntriesError(missing)
+    missing = (
+        [entry for entry in pack.pack.unresolved if entry.wanted("client")]
+        if pack is not None and not from_folders
+        else []
+    )
+    if missing and not dry_run:
+        raise UnresolvedEntriesError(missing)
+    if missing:
+        report_error(
+            UnresolvedEntriesError(missing), app.err, prefix="Before you update: "
+        )
     plans: list[Plan] = []
-    if pack is not None and pack.new_game:
+    if pack is not None and pack.new_game and state.additions:
         app.out.print(
             Text(
                 "What you added is updated after the pack, the next time you run "
@@ -282,8 +295,12 @@ def update_command(
                 style="dim",
             )
         )
-    elif not pack_only and state.additions:
-        plans = _addition_updates(app, instance, state, choices.prereleases)
+    elif pack is None or not pack.new_game:
+        plans = (
+            _addition_updates(app, instance, state, choices.prereleases)
+            if not pack_only and state.additions
+            else []
+        )
     pending = _show_additions(app, instance.path.name, plans) if plans else False
     if pack is None and not pending:
         app.out.print(f"Everything in {instance.path.name} is up to date.")

@@ -1,9 +1,9 @@
 """Open the platforms that projects come from."""
 
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Collection, Generator
 from contextlib import contextmanager
 
-from modsmith.errors import NetworkError
+from modsmith.errors import NetworkError, PlatformError
 from modsmith.platforms import CurseForge, Modrinth, Platform
 
 from .. import __version__
@@ -14,6 +14,8 @@ USER_AGENT = f"modsmith-app/{__version__} (+https://github.com/PaPa-jun/Modsmith
 CURSEFORGE_CONSOLE = "https://console.curseforge.com"
 # CurseForge answers these when the key is wrong.
 REJECTED = (401, 403)
+NOT_FOUND = 404
+TITLES = {"modrinth": "Modrinth", "curseforge": "CurseForge"}
 
 # Opens a platform by name. Tests pass one that serves a catalogue from memory.
 PlatformOpener = Callable[[str, Config], Platform]
@@ -47,15 +49,22 @@ def open_platform(name: str, config: Config) -> Platform:
     raise AppError(f"{name!r} is not a platform.", hint="Use modrinth or curseforge.")
 
 
+def platform_title(name: str) -> str:
+    """Return a platform's name as people write it, such as ``CurseForge``."""
+    return TITLES.get(name, name)
+
+
 @contextmanager
-def explained(name: str) -> Generator[None]:
+def explained(name: str, wanted: Collection[str] = ()) -> Generator[None]:
     """Turn a platform's refusal into an `AppError` that says what to fix.
 
     Args:
         name: The platform in use.
+        wanted: The projects asked for, to name the one the platform lacks.
 
     Raises:
-        AppError: CurseForge rejected the API key.
+        AppError: CurseForge rejected the API key, or the platform has no
+            project by one of the wanted names.
     """
     try:
         yield
@@ -69,4 +78,21 @@ def explained(name: str) -> Generator[None]:
                     "variable inside double quotes."
                 ),
             ) from e
+        if e.status == NOT_FOUND and wanted:
+            raise _unknown(name, wanted, str(e)) from e
         raise
+    except PlatformError as e:
+        # CurseForge finds slugs by searching, and says so when none matches.
+        if any(item in str(e) for item in wanted):
+            raise _unknown(name, wanted, str(e)) from e
+        raise
+
+
+def _unknown(name: str, wanted: Collection[str], message: str) -> AppError:
+    """Say which of the wanted projects a platform does not have."""
+    unknown = [item for item in wanted if item in message] or list(wanted)
+    names = " or ".join(repr(item) for item in unknown)
+    return AppError(
+        f"{platform_title(name)} has no project called {names}.",
+        hint=f"Look for it with: modsmith search {unknown[0]} --platform {name}",
+    )

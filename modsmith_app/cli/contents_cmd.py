@@ -94,19 +94,27 @@ def show_command(ctx: typer.Context, name: InstanceName = None) -> None:
     app.out.print(table)
 
 
-def _notes(app: AppContext, plan: Plan) -> None:
-    """Say what a plan leaves out and why."""
-    for item in plan.skipped:
-        app.out.print(Text(f"  = {item.name} is already in the pack", style="dim"))
-    for name in plan.unavailable:
-        app.out.print(
-            Text(f"  ? {name} has no release for this instance", style="yellow")
-        )
+def _notes(instance: Instance, plan: Plan) -> list[Text]:
+    """Say what a plan leaves out, and why it adds what nobody asked for."""
+    state = instance.state
+    held = {item.path for item in state.additions} if state else set[str]()
+    changing = {*plan.changes.added, *plan.changes.updated}
+    notes = [
+        Text(f"  = {item.name} is already in the pack", style="dim")
+        for item in plan.skipped
+    ]
     for item in plan.additions:
-        if not item.requested:
-            app.out.print(
-                Text(f"    {item.path} is needed by another mod", style="dim")
+        if item.path in changing and not item.requested:
+            notes.append(
+                Text(f"    {item.name} comes too, because a mod needs it", style="dim")
             )
+        elif item.requested and item.path not in changing and item.path in held:
+            notes.append(Text(f"  = {item.name} is already added", style="dim"))
+    notes += [
+        Text(f"  ? {name} has no release for this instance", style="yellow")
+        for name in plan.unavailable
+    ]
+    return notes
 
 
 def add_command(
@@ -138,7 +146,10 @@ def add_command(
         wanted = [ref.name for ref in refs if ref.platform == platform_name]
         if not wanted:
             continue
-        with explained(platform_name), app.platform(platform_name) as platform:
+        with (
+            explained(platform_name, wanted),
+            app.platform(platform_name) as platform,
+        ):
             plan = instance.plan(
                 platform,
                 wanted,
@@ -156,12 +167,11 @@ def add_command(
         conflicts=tuple(path for _, plan in plans for path in plan.changes.conflicts),
     )
     sizes = {item.path: item.entry.size for _, plan in plans for item in plan.additions}
-    pending = show_plan(app, changes, sizes, title=title)
-    for _, plan in plans:
-        _notes(app, plan)
     for _, plan in plans:
         if not plan.ok:
             raise DependencyError(plan)
+    notes = [note for _, plan in plans for note in _notes(instance, plan)]
+    pending = show_plan(app, changes, sizes, title=title, notes=notes)
     if not pending or dry_run:
         return
     confirm(app, "Add them?", yes=yes)
