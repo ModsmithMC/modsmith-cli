@@ -7,15 +7,15 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PaPa-jun/Modsmith-App/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/PaPa-jun/Modsmith-App/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
-  <a href="https://github.com/PaPa-jun/Modsmith-App/releases"><img src="https://img.shields.io/github/v/release/PaPa-jun/Modsmith-App?style=flat-square&color=3c8527" alt="Release"></a>
+  <a href="https://github.com/ModsmithMC/modsmith/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ModsmithMC/modsmith/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
+  <a href="https://github.com/ModsmithMC/modsmith/releases"><img src="https://img.shields.io/github/v/release/ModsmithMC/modsmith?style=flat-square&color=3c8527" alt="Release"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+"></a>
   <img src="https://img.shields.io/badge/status-alpha-orange?style=flat-square" alt="Alpha">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT license"></a>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> · <strong>简体中文</strong>
+  <a href="https://modsmith.meneither.site/modsmith/">文档</a> · <a href="README.md">English</a> · <strong>简体中文</strong>
 </p>
 
 ---
@@ -25,34 +25,34 @@ Modsmith 负责准备游戏文件，并在 Minecraft 官方启动器里添加一
 <table>
   <tr>
     <td width="33%" valign="top">
-      <img src="https://raw.githubusercontent.com/PaPa-jun/Modsmith/main/docs/assets/pixel/package.svg" alt="" width="24" height="24">
+      <img src="https://raw.githubusercontent.com/ModsmithMC/modsmithmc.github.io/main/site/assets/pixel/package.svg" alt="" width="24" height="24">
       <p><strong>一条命令装好整合包</strong></p>
       从 Modrinth、CurseForge 或本地文件安装整合包，连同它的模组加载器和 Minecraft。
     </td>
     <td width="33%" valign="top">
-      <img src="https://raw.githubusercontent.com/PaPa-jun/Modsmith/main/docs/assets/pixel/puzzle.svg" alt="" width="24" height="24">
+      <img src="https://raw.githubusercontent.com/ModsmithMC/modsmithmc.github.io/main/site/assets/pixel/puzzle.svg" alt="" width="24" height="24">
       <p><strong>想加什么就加什么</strong></p>
       添加模组、资源包和光影，所需的前置模组会一起装上。
     </td>
     <td width="33%" valign="top">
-      <img src="https://raw.githubusercontent.com/PaPa-jun/Modsmith/main/docs/assets/pixel/refresh.svg" alt="" width="24" height="24">
+      <img src="https://raw.githubusercontent.com/ModsmithMC/modsmithmc.github.io/main/site/assets/pixel/refresh.svg" alt="" width="24" height="24">
       <p><strong>更新不丢改动</strong></p>
       更新整合包和你自己加的内容，并显示每个版本的更新内容。
     </td>
   </tr>
   <tr>
     <td valign="top">
-      <img src="https://raw.githubusercontent.com/PaPa-jun/Modsmith/main/docs/assets/pixel/list.svg" alt="" width="24" height="24">
+      <img src="https://raw.githubusercontent.com/ModsmithMC/modsmithmc.github.io/main/site/assets/pixel/list.svg" alt="" width="24" height="24">
       <p><strong>先看再改</strong></p>
       每次改动都会先列出来，等你确认。<code>--dry-run</code> 只列出不执行。
     </td>
     <td valign="top">
-      <img src="https://raw.githubusercontent.com/PaPa-jun/Modsmith/main/docs/assets/pixel/play.svg" alt="" width="24" height="24">
+      <img src="https://raw.githubusercontent.com/ModsmithMC/modsmithmc.github.io/main/site/assets/pixel/play.svg" alt="" width="24" height="24">
       <p><strong>启动器里直接能玩</strong></p>
       每个实例在官方启动器里都有自己的安装项，并带上整合包的图标。
     </td>
     <td valign="top">
-      <img src="https://raw.githubusercontent.com/PaPa-jun/Modsmith/main/docs/assets/pixel/link.svg" alt="" width="24" height="24">
+      <img src="https://raw.githubusercontent.com/ModsmithMC/modsmithmc.github.io/main/site/assets/pixel/link.svg" alt="" width="24" height="24">
       <p><strong>接管已有的安装</strong></p>
       接管你在启动器里自己建的安装项，以及里面已有的模组。
     </td>
@@ -61,16 +61,16 @@ Modsmith 负责准备游戏文件，并在 Minecraft 官方启动器里添加一
 
 ## 安装
 
-Modsmith 需要 Python 3.12 或更新版本。用 [uv](https://docs.astral.sh/uv/) 从 [Releases](https://github.com/PaPa-jun/Modsmith-App/releases) 安装：
+Modsmith 需要 Python 3.12 或更新版本。用 [uv](https://docs.astral.sh/uv/) 从 [Releases](https://github.com/ModsmithMC/modsmith/releases) 安装：
 
 ```bash
-uv tool install https://github.com/PaPa-jun/Modsmith-App/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+uv tool install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
 ```
 
 或者用 [pipx](https://pipx.pypa.io/)：
 
 ```bash
-pipx install https://github.com/PaPa-jun/Modsmith-App/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+pipx install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
 ```
 
 然后确认安装成功：
@@ -199,7 +199,7 @@ Modsmith 会读出它的 Minecraft 和加载器版本，并识别其中的模组
 <details>
 <summary><b>在脚本里使用</b></summary>
 
-没有终端时，Modsmith 从不询问：它会停下来，提示你加上 `--yes`。删除操作还需要再加 `--force`。如果需要更多控制，请直接使用 [Modsmith Python 库](https://github.com/PaPa-jun/Modsmith)。
+没有终端时，Modsmith 从不询问：它会停下来，提示你加上 `--yes`。删除操作还需要再加 `--force`。如果需要更多控制，请直接使用 [Modsmith Python 库](https://github.com/ModsmithMC/modsmith-python)。
 
 </details>
 
@@ -215,7 +215,7 @@ Modsmith 会读出它的 Minecraft 和加载器版本，并识别其中的模组
 
 ## 基于
 
-Modsmith 基于 [Modsmith Python 库](https://github.com/PaPa-jun/Modsmith)，平台、整合包格式、模组加载器和实例这些实际工作都由它完成。
+Modsmith 基于 [Modsmith Python 库](https://github.com/ModsmithMC/modsmith-python)，平台、整合包格式、模组加载器和实例这些实际工作都由它完成。
 
 ## 许可证
 
