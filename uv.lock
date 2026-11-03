@@ -358,12 +358,16 @@ wheels = [
 [[package]]
 name = "modsmith"
 version = "0.3.5"
-source = { git = "https://github.com/PaPa-jun/Modsmith?branch=develop#b3e6431ba2e4af188a3e75171272a86ee91b6e21" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "filelock" },
     { name = "platformdirs" },
     { name = "pydantic" },
     { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/01/6a57e5be25d40f10506e690e4888ba24fb0327a2519354b6a2f1998f2ad0/modsmith-0.3.5.tar.gz", hash = "sha256:ac422f9d6081f4bc04185fd536e24410c26324d7465270a180d0b6b14c7eddbb", size = 348087, upload-time = "2026-11-03T13:10:59.799Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/ba/bb2576e4dd39d667ca572ccb77321f739948fd6bc3779ab37c2afba50dd1/modsmith-0.3.5-py3-none-any.whl", hash = "sha256:8f0760db4c2476d7bbb47ed9b02e18b038ee3b9c2ac52f2f54f779bcb76dd181", size = 96400, upload-time = "2026-11-03T13:10:58.533Z" },
 ]
 
 [[package]]
@@ -402,7 +406,7 @@ typing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "modsmith", git = "https://github.com/PaPa-jun/Modsmith?branch=develop" },
+    { name = "modsmith", specifier = ">=0.3.5,<0.4" },
     { name = "platformdirs", specifier = ">=4.3" },
     { name = "rich", specifier = ">=13.9" },
     { name = "tomli-w", specifier = ">=1.1" },
