@@ -10,7 +10,7 @@ from .. import __version__
 from .config import Config
 from .errors import AppError
 
-USER_AGENT = f"modsmith-app/{__version__} (+https://github.com/ModsmithMC/modsmith)"
+USER_AGENT = f"modsmith-cli/{__version__} (+https://github.com/ModsmithMC/modsmith)"
 CURSEFORGE_CONSOLE = "https://console.curseforge.com"
 # CurseForge answers these when the key is wrong.
 REJECTED = (401, 403)

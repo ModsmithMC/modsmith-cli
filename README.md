@@ -3,19 +3,19 @@
 </p>
 
 <p align="center">
-  <strong>Install Minecraft modpacks, mods, resource packs and shaders for the official launcher, from the command line.</strong>
+  <strong>Modpacks from your terminal: find, install and update Minecraft modpacks, mods, resource packs and shaders for the official launcher.</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/ModsmithMC/modsmith/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ModsmithMC/modsmith/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
-  <a href="https://github.com/ModsmithMC/modsmith/releases"><img src="https://img.shields.io/github/v/release/ModsmithMC/modsmith?style=flat-square&color=3c8527" alt="Release"></a>
+  <a href="https://pypi.org/project/modsmith-cli/"><img src="https://img.shields.io/pypi/v/modsmith-cli?style=flat-square&color=3c8527" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+"></a>
   <img src="https://img.shields.io/badge/status-alpha-orange?style=flat-square" alt="Alpha">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT license"></a>
 </p>
 
 <p align="center">
-  <a href="https://modsmithmc.org/modsmith/">Documentation</a> · <strong>English</strong> · <a href="README_ZH.md">简体中文</a>
+  <a href="https://modsmithmc.org/">Website</a> · <a href="https://modsmithmc.org/modsmith/">Documentation</a> · <strong>English</strong> · <a href="README_ZH.md">简体中文</a>
 </p>
 
 ---
@@ -61,16 +61,16 @@ Modsmith prepares the game files and adds an installation to the official Minecr
 
 ## Installation
 
-Modsmith needs Python 3.12 or newer. Install it as a tool with [uv](https://docs.astral.sh/uv/), from a [release](https://github.com/ModsmithMC/modsmith/releases):
+Modsmith needs Python 3.12 or newer. Install it from PyPI as a tool with [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv tool install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+uv tool install modsmith-cli
 ```
 
 Or with [pipx](https://pipx.pypa.io/):
 
 ```bash
-pipx install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+pipx install modsmith-cli
 ```
 
 Then check that it works:
@@ -78,6 +78,8 @@ Then check that it works:
 ```bash
 modsmith --version
 ```
+
+Coming from 0.1.0? It was installed under another name, so remove it first with `uv tool uninstall modsmith-app` or `pipx uninstall modsmith-app`. Your instances and settings stay where they are.
 
 ## Quick start
 
@@ -213,10 +215,16 @@ Without a terminal, Modsmith never asks: it stops and tells you to add `--yes`. 
 
 Set `MODSMITH_HOME` to keep everything in one folder instead.
 
-## Built on
+## Part of Modsmith
 
-Modsmith is built on the [Modsmith Python library](https://github.com/ModsmithMC/modsmith-python), which does the real work: platforms, modpack formats, mod loaders and instances.
+The command line is built on the Python library, which does the real work: platforms, modpack formats, mod loaders and instances.
+
+| | What it is | Code |
+| :--- | :--- | :--- |
+| [Command line](https://modsmithmc.org/modsmith/) | Modpacks from your terminal | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
+| [Python library](https://modsmithmc.org/modsmith-python/) | Build your own modpack tools | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
+| [Website](https://modsmithmc.org/) | The project's home | [ModsmithMC/modsmithmc.github.io](https://github.com/ModsmithMC/modsmithmc.github.io) |
 
 ## License
 
-[MIT](LICENSE)
+Modsmith is released under the [MIT License](LICENSE). It is not affiliated with Mojang, Microsoft, Modrinth or CurseForge.

@@ -74,7 +74,7 @@ too.
 
 ```console
 $ modsmith --version
-modsmith 0.1.0
+modsmith 0.1.1
 ```
 
 If the terminal says it does not know `modsmith`, open a new one, so it picks
@@ -100,6 +100,14 @@ Then open a new terminal.
 
 ```console
 $ uv tool upgrade modsmith-cli
+```
+
+Modsmith 0.1.0 was installed from a file, under the name `modsmith-app`.
+Remove it before you install from PyPI; your instances and settings stay:
+
+```console
+$ uv tool uninstall modsmith-app
+$ uv tool install modsmith-cli
 ```
 
 ## Uninstall

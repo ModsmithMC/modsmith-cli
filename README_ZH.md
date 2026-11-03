@@ -3,19 +3,19 @@
 </p>
 
 <p align="center">
-  <strong>在命令行里为官方启动器安装 Minecraft 整合包、模组、资源包和光影。</strong>
+  <strong>在终端里查找、安装和更新 Minecraft 整合包、模组、资源包和光影，直接用于官方启动器。</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/ModsmithMC/modsmith/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ModsmithMC/modsmith/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
-  <a href="https://github.com/ModsmithMC/modsmith/releases"><img src="https://img.shields.io/github/v/release/ModsmithMC/modsmith?style=flat-square&color=3c8527" alt="Release"></a>
+  <a href="https://pypi.org/project/modsmith-cli/"><img src="https://img.shields.io/pypi/v/modsmith-cli?style=flat-square&color=3c8527" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+"></a>
   <img src="https://img.shields.io/badge/status-alpha-orange?style=flat-square" alt="Alpha">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT license"></a>
 </p>
 
 <p align="center">
-  <a href="https://modsmithmc.org/modsmith/">文档</a> · <a href="README.md">English</a> · <strong>简体中文</strong>
+  <a href="https://modsmithmc.org/">网站</a> · <a href="https://modsmithmc.org/modsmith/">文档</a> · <a href="README.md">English</a> · <strong>简体中文</strong>
 </p>
 
 ---
@@ -61,16 +61,16 @@ Modsmith 负责准备游戏文件，并在 Minecraft 官方启动器里添加一
 
 ## 安装
 
-Modsmith 需要 Python 3.12 或更新版本。用 [uv](https://docs.astral.sh/uv/) 从 [Releases](https://github.com/ModsmithMC/modsmith/releases) 安装：
+Modsmith 需要 Python 3.12 或更新版本。用 [uv](https://docs.astral.sh/uv/) 从 PyPI 安装：
 
 ```bash
-uv tool install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+uv tool install modsmith-cli
 ```
 
 或者用 [pipx](https://pipx.pypa.io/)：
 
 ```bash
-pipx install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/modsmith_app-0.1.0-py3-none-any.whl
+pipx install modsmith-cli
 ```
 
 然后确认安装成功：
@@ -78,6 +78,8 @@ pipx install https://github.com/ModsmithMC/modsmith/releases/download/v0.1.0/mod
 ```bash
 modsmith --version
 ```
+
+从 0.1.0 升级？它当时用的是另一个名字，请先用 `uv tool uninstall modsmith-app` 或 `pipx uninstall modsmith-app` 卸载。你的实例和设置都会保留。
 
 ## 快速上手
 
@@ -213,10 +215,16 @@ Modsmith 会读出它的 Minecraft 和加载器版本，并识别其中的模组
 
 设置 `MODSMITH_HOME` 后，所有内容都会放在同一个文件夹里。
 
-## 基于
+## Modsmith 的组成
 
-Modsmith 基于 [Modsmith Python 库](https://github.com/ModsmithMC/modsmith-python)，平台、整合包格式、模组加载器和实例这些实际工作都由它完成。
+命令行基于 Python 库构建，平台、整合包格式、模组加载器和实例这些实际工作都由它完成。
+
+| | 简介 | 代码 |
+| :--- | :--- | :--- |
+| [命令行](https://modsmithmc.org/modsmith/) | 在终端里安装整合包 | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
+| [Python 库](https://modsmithmc.org/modsmith-python/) | 打造你自己的整合包工具 | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
+| [网站](https://modsmithmc.org/) | 项目主页 | [ModsmithMC/modsmithmc.github.io](https://github.com/ModsmithMC/modsmithmc.github.io) |
 
 ## 许可证
 
-[MIT](LICENSE)
+Modsmith 基于 [MIT 许可证](LICENSE) 发布，与 Mojang、Microsoft、Modrinth 和 CurseForge 没有关联。
