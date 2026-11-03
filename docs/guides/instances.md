@@ -46,14 +46,5 @@ name. Without a terminal, it needs both `--yes` and `--force`.
 
 ## Where things go
 
-| What | Where |
-| --- | --- |
-| Instances | Your user data folder, under `Modsmith/instances` (`modsmith/instances` on Linux) |
-| Settings | `config.toml`; `modsmith config path` prints where |
-| Downloads | Your user cache folder, under `Modsmith` |
-| Minecraft and mod loaders | The official launcher's game folder |
-| Launcher installations | The launcher's `launcher_profiles.json`, one per instance |
-
-Change where new instances go with
-`modsmith config set instances_dir <folder>`. Set `MODSMITH_HOME` to keep
-settings, instances and downloads in one folder. See [settings](../reference/settings.md).
+See [where things go](../concepts/instances.md#where-things-go) for where
+instances, settings and downloads are kept, and how to move them.
