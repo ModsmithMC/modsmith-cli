@@ -2,9 +2,11 @@
 
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 from urllib.parse import urljoin
 
+from pygments.lexer import Lexer
+from pygments.token import Generic, Name, Number, String, Text, _TokenType
 from sphinx.application import Sphinx
 from typer.main import get_command
 
@@ -213,6 +215,97 @@ def slug(path: str) -> str:
     return path.removeprefix("modsmith ").replace(" ", "-")
 
 
+COMMAND_NAMES = {name for names in GROUPS.values() for name in names} | {
+    "get",
+    "set",
+    "unset",
+    "path",
+}
+# One word of a command line: an option, a quoted value, or a plain word.
+WORD = re.compile(r'(--?[\w-]+)|("[^"]*"|\'[^\']*\')|([^\s"\']+)|(\s+)')
+PLATFORM_PREFIX = re.compile(r"^(modrinth|curseforge):(.+)$")
+# Lines of output, by the mark Modsmith starts them with.
+MARKS = {
+    "+": Generic.Inserted,
+    "~": Generic.Subheading,
+    "-": Generic.Deleted,
+    "!": Generic.Error,
+}
+SUMMARY = re.compile(
+    r"^\d+ (to add|to update|to remove|of your changes)|^Nothing to change"
+)
+
+
+class ModsmithConsoleLexer(Lexer):
+    """Commands typed at a prompt, and what Modsmith prints back.
+
+    A plain console lexer colours only the prompt. This one picks out
+    ``modsmith`` and its command, options, quoted values and ``platform:``
+    prefixes, and in the output the marks of a plan and its summary.
+    """
+
+    name = "Modsmith console"
+    aliases: ClassVar[list[str]] = ["console", "modsmith"]
+
+    def command_tokens(self, text: str) -> list[tuple[_TokenType, str]]:
+        """Split a typed command into its parts."""
+        tokens: list[tuple[_TokenType, str]] = []
+        words = 0
+        program = ""
+        for match in WORD.finditer(text):
+            option, quoted, word, space = match.groups()
+            if space:
+                tokens.append((Text, space))
+            elif option:
+                tokens.append((Name.Attribute, option))
+            elif quoted:
+                tokens.append((String, quoted))
+            else:
+                words += 1
+                prefix = PLATFORM_PREFIX.match(word)
+                if words == 1:
+                    program = word
+                    kind = Name.Namespace if word == "modsmith" else Name.Builtin
+                    tokens.append((kind, word))
+                elif program == "modsmith" and word in COMMAND_NAMES and words <= 3:
+                    tokens.append((Name.Function, word))
+                elif prefix:
+                    tokens += [(Name.Class, prefix[1] + ":"), (String, prefix[2])]
+                elif word.isdigit():
+                    tokens.append((Number, word))
+                else:
+                    tokens.append((Text, word))
+        return tokens
+
+    def output_token(self, line: str) -> _TokenType:
+        """Choose how a line of output looks."""
+        stripped = line.strip()
+        if stripped[:1] in MARKS and stripped[1:2] == " ":
+            return MARKS[stripped[:1]]
+        if SUMMARY.match(stripped):
+            return Generic.Strong
+        if stripped.startswith("Error:"):
+            return Generic.Error
+        return Generic.Output
+
+    def get_tokens_unprocessed(self, text: str):
+        """Yield each line's tokens, as a command if it follows a prompt."""
+        position = 0
+        for line in text.splitlines(keepends=True):
+            body = line.rstrip("\n")
+            if body.startswith("$ "):
+                yield position, Generic.Prompt, "$ "
+                offset = position + 2
+                for kind, value in self.command_tokens(body[2:]):
+                    yield offset, kind, value
+                    offset += len(value)
+            elif body:
+                yield position, self.output_token(body), body
+            if line.endswith("\n"):
+                yield position + len(body), Text, "\n"
+            position += len(line)
+
+
 # Links to a command's page, and the page itself, are marked as commands.
 LINK = re.compile(r'(<a [^>]*href="([^"]+)"[^>]*)>')
 COMMANDS_PATH = "reference/commands/"
@@ -243,6 +336,7 @@ def mark_commands(
 
 def setup(app: Sphinx) -> None:
     """Register the build hooks."""
+    app.add_lexer("console", ModsmithConsoleLexer)
     # After the theme has built the section's sidebar, which this marks up too.
     app.connect("html-page-context", mark_commands, priority=600)
 
