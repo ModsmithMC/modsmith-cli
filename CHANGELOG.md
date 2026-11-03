@@ -8,7 +8,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- A guide at [modsmith.meneither.site/modsmith](https://modsmith.meneither.site/modsmith/),
+- A guide at [modsmithmc.org/modsmith](https://modsmithmc.org/modsmith/),
   with a page for every command and setting.
 
 ### Changed

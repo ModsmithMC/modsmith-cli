@@ -27,9 +27,9 @@ dependencies = [
 modsmith = "modsmith_app.cli:main"
 
 [project.urls]
-Homepage = "https://modsmith.meneither.site/"
+Homepage = "https://modsmithmc.org/"
 Source = "https://github.com/ModsmithMC/modsmith"
-Documentation = "https://modsmith.meneither.site/modsmith/"
+Documentation = "https://modsmithmc.org/modsmith/"
 Issues = "https://github.com/ModsmithMC/modsmith/issues"
 
 [dependency-groups]

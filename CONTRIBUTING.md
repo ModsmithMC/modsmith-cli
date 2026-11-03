@@ -50,7 +50,7 @@ uv run sphinx-build -W -n -b dirhtml docs docs/_build/html
 ```
 
 The documentation in `docs/` is published at
-<https://modsmith.meneither.site/modsmith/> from `main`. Its command and
+<https://modsmithmc.org/modsmith/> from `main`. Its command and
 settings reference is generated from the code on every build, so a new option
 only needs good help text.
 
