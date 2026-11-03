@@ -54,3 +54,16 @@ through environment variables.
 `main` holds released work and new versions are developed on `develop`. Build
 each feature on its own branch cut from `develop`, and merge it back through a
 pull request.
+
+## Releasing
+
+Releases are published on GitHub, built from a tag.
+
+1. Make sure the `modsmith` version the app needs is on PyPI. Then remove
+   `[tool.uv.sources]` from `pyproject.toml` and run `uv lock`, so the app is
+   built and tested against the published library.
+2. Set `version` in `pyproject.toml` and move the `Unreleased` notes in
+   `CHANGELOG.md` under the new version.
+3. Merge `develop` into `main`.
+4. Push a tag such as `v0.1.0`. The tag must match the project version, and the
+   release notes come from that version's section of `CHANGELOG.md`.

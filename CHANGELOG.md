@@ -6,9 +6,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-03
+
+The first release of the `modsmith` command.
+
 ### Added
 
-- The `modsmith` command, with `list`, `search` and `config`.
+- `list`, `search` and `config`.
 - Settings in `config.toml`, overridden by environment variables and command
   line options. `MODSMITH_HOME` keeps everything in one folder.
 - `install` installs a modpack, from a file, Modrinth or CurseForge, as a new

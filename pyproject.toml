@@ -1,6 +1,6 @@
 [project]
 name = "modsmith-app"
-version = "0.1.0.dev0"
+version = "0.1.0"
 description = "Install Minecraft modpacks and mods for the official launcher."
 readme = "README.md"
 license = "MIT"
@@ -8,7 +8,7 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12"
 authors = [{ name = "MeNeither", email = "pengyufeng2003@outlook.com" }]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: End Users/Desktop",
     "Operating System :: OS Independent",
@@ -16,7 +16,7 @@ classifiers = [
     "Topic :: Games/Entertainment",
 ]
 dependencies = [
-    "modsmith>=0.3",
+    "modsmith>=0.3.5,<0.4",
     "platformdirs>=4.3",
     "rich>=13.9",
     "tomli-w>=1.1",
@@ -52,7 +52,8 @@ dev = [
 [tool.uv]
 default-groups = ["dev"]
 
-# The app follows the library's development branch until the next release.
+# The app follows the library's development branch. Remove this, and relock,
+# once the modsmith release it needs is on PyPI, before tagging a release.
 [tool.uv.sources]
 modsmith = { git = "https://github.com/PaPa-jun/Modsmith", branch = "develop" }
 
