@@ -25,7 +25,7 @@ def mods(server, catalogs):
 
     needs = [Dependency("required", "sodium"), Dependency("required", "library")]
     catalog = Catalog(
-        project("sodium", downloads=50),
+        project("sodium", downloads=50, author="jellysquid3"),
         project("iris", downloads=40),
         project("library"),
         project("other"),
@@ -47,7 +47,7 @@ def test_add_installs_dependencies(run, survival, mods):
 
     assert result.exit_code == 0, result.output
     assert "  + mods/iris-1.jar" in result.stdout
-    assert "mods/sodium-1.jar is needed by another mod" in result.stdout
+    assert "Sodium comes too, because a mod needs it" in result.stdout
     assert "Added to survival." in result.stdout
     assert (survival.path / "mods" / "sodium-1.jar").read_bytes() == b"sodium 1"
     assert {item.slug for item in survival.additions} == {"iris", "sodium", "library"}
@@ -208,12 +208,19 @@ def test_adopt_recognises_files(run, survival, mods, catalogs):
     assert "No unrecognised files" in result.stdout
 
 
+def test_info_of_an_unknown_project(run, mods):
+    result = run("info", "nothing-like-it")
+    assert result.exit_code == 1
+    assert "Modrinth has no project called 'nothing-like-it'." in result.stderr
+
+
 def test_info(run, mods):
     result = run("info", "sodium")
 
     assert result.exit_code == 0, result.output
     assert "Sodium" in result.stdout
     assert "About sodium" in result.stdout
+    assert "By         jellysquid3" in result.stdout.splitlines()[2]
     assert "Downloads  50" in result.stdout
     assert "What changed in Sodium 1" in result.stdout
     assert "Fewer crashes." in result.stdout
@@ -232,6 +239,11 @@ def test_loaders(run):
 
     assert "has no versions" in run("loaders", "test-loader", "0.30").stdout
 
+    result = run("loaders", "optifine", "1.21.1")
+    assert result.exit_code == 1
+    assert "Modsmith cannot install 'optifine'." in result.stderr
+    assert "fabric, quilt, forge or neoforge" in result.stderr
+
 
 def test_loaders_lists_the_newest_unless_asked(run):
     result = run("loaders", "many-loader", "1.21.1")
@@ -243,3 +255,57 @@ def test_loaders_lists_the_newest_unless_asked(run):
     assert "older versions" not in result.stdout
     assert result.stdout.splitlines()[-1].split()[0] == "1"
     assert "beta" in result.stdout
+
+
+def test_files_can_be_named_by_the_id_they_declare(run, survival):
+    write_zip(
+        survival.path / "mods" / "iris-fabric-1.11.4+mc1.21.1.jar",
+        {"fabric.mod.json": '{"id": "iris", "name": "Iris Shaders", "version": "1"}'},
+    )
+
+    result = run("disable", "survival", "iris")
+    assert result.exit_code == 0, result.output
+    assert "Turned off mods/iris-fabric-1.11.4+mc1.21.1.jar." in result.stdout
+    result = run("enable", "survival", "iris shaders")
+    assert result.exit_code == 0, result.output
+
+
+def test_add_says_what_is_there_already(run, survival, mods):
+    run("add", "survival", "iris", "-y")
+
+    result = run("add", "survival", "iris", "sodium")
+
+    assert result.exit_code == 0, result.output
+    lines = result.stdout.splitlines()
+    assert "  = Iris is already added" in lines
+    assert "  = Sodium is already added" in lines
+    assert lines[-1] == "Nothing to change."
+
+
+def test_add_an_unknown_project(run, survival, mods):
+    result = run("add", "survival", "sodium", "nothing-like-it")
+    assert result.exit_code == 1
+    assert "Modrinth has no project called 'nothing-like-it'." in result.stderr
+    assert "modsmith search nothing-like-it --platform modrinth" in result.stderr
+    assert "404" not in result.stderr
+
+
+def test_add_an_unknown_curseforge_project(run, survival, catalogs):
+    catalogs["curseforge"] = Catalog(name="curseforge")
+    result = run("add", "survival", "curseforge:nothing-like-it")
+    assert result.exit_code == 1
+    assert "CurseForge has no project called 'nothing-like-it'." in result.stderr
+
+
+def test_add_names_a_dependency_with_no_release(run, survival, mods):
+    mods.projects.append(project("ghost", name="Ghost Lib"))
+    mods.publish(mods.mod("ghost", loader="fabric"))
+    mods.publish(mods.mod("haunted", "1", Dependency("required", "ghost")))
+    mods.projects.append(project("haunted"))
+
+    result = run("add", "survival", "haunted", "--dry-run")
+
+    assert result.exit_code == 1
+    assert "This cannot be installed, because of these problems." in result.stderr
+    assert "Haunted 1 needs Ghost Lib, which has no release" in result.stderr
+    assert "+ mods/haunted" not in result.stdout

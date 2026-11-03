@@ -212,6 +212,18 @@ def check_launcher(game: GameDir, running: bool) -> Launcher:
     return launcher
 
 
+def profile_name(launcher: Launcher, wanted: str, key: str, instance: str) -> str:
+    """Return a launcher name for an installation that no other one has.
+
+    A second instance of the same pack is told apart by its instance name, as
+    in ``Fabulously Optimized (fo-2)``.
+    """
+    taken = {
+        profile.name for other, profile in launcher.profiles().items() if other != key
+    }
+    return wanted if wanted not in taken else f"{wanted} ({instance})"
+
+
 def profile_key(name: str) -> str:
     """Return the launcher profile key for an instance."""
     return PROFILE_PREFIX + name_from(name)

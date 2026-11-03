@@ -7,12 +7,13 @@ from rich.text import Text
 
 from ..core.registry import list_instances
 from .context import get
+from .install_cmd import loader_label
 
 
 def _loader(state: InstanceState) -> str:
     if not state.loader_kind:
         return "vanilla"
-    return " ".join(part for part in (state.loader_kind, state.loader_version) if part)
+    return loader_label(state.loader_kind, state.loader_version)
 
 
 def _pack(state: InstanceState) -> str:

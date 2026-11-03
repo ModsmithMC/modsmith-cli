@@ -142,11 +142,15 @@ def import_command(
     app.out.print(f"{path.name} is now an instance.")
 
 
-def _destination(text: str, config: Config) -> Path:
-    """Return where an instance moves to: a new name, or a folder path."""
+def _destination(text: str, config: Config, current: Path) -> Path:
+    """Return where an instance moves to: a new name, or a folder path.
+
+    A new name keeps the instance in the folder it is in now, so an imported
+    instance is renamed in place rather than moved into the instances folder.
+    """
     path = locate(text, config)
     if path.parent == config.instances_dir:
-        check_name(path.name)
+        path = current.parent / check_name(path.name)
     if path.exists():
         raise AppError(
             f"{path} already exists.",
@@ -169,7 +173,7 @@ def move_command(
     app = get(ctx)
     instance, _ = resolve_instance(name, app.config, app.paths)
     old = instance.path.resolve()
-    new = _destination(destination, app.config)
+    new = _destination(destination, app.config, old)
     _check_free_name(app, new, moving=old)
     record = read_record(old)
     game = GameDir(app.config.game_dir)
@@ -189,7 +193,8 @@ def move_command(
             launcher.add_profile(
                 profile.name, profile.version_id, new, key=record.profile
             )
-    app.out.print(f"Moved {old.name} to {new}.")
+    where = new.name if new.parent == old.parent else str(new)
+    app.out.print(f"Moved {old.name} to {where}.")
 
 
 def _worlds(path: Path) -> int:
