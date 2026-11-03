@@ -2,7 +2,7 @@
 
 from collections.abc import Iterable
 
-from modsmith.instances import Addition, ContentFile, Instance, InstanceState
+from modsmith.instances import ContentFile, Instance
 
 from .errors import AppError
 
@@ -43,39 +43,3 @@ def find_contents(instance: Instance, names: Iterable[str]) -> list[ContentFile]
             raise AppError(f"{name!r} could mean {listed}.", hint="Use the full path.")
         found.append(hits[0])
     return list(dict.fromkeys(found))
-
-
-def removal_preview(
-    state: InstanceState, names: Iterable[str], *, keep_dependencies: bool
-) -> list[Addition]:
-    """Work out which additions removing these projects takes away.
-
-    Dependencies that nothing else needs go too, unless they are kept.
-
-    Raises:
-        AppError: A name is not a project that was added on its own.
-    """
-    names = list(names)
-    unknown = [
-        name
-        for name in names
-        if not any(item.matches(name) for item in state.additions)
-    ]
-    if unknown:
-        raise AppError(
-            f"Not added on its own: {', '.join(unknown)}.",
-            hint="Files from the pack cannot be removed, but you can turn them off "
-            "with: modsmith disable",
-        )
-    staying = [
-        item
-        for item in state.additions
-        if not any(item.matches(name) for name in names)
-    ]
-    while not keep_dependencies:
-        needed = {project for item in staying for project in item.requires}
-        kept = [item for item in staying if item.requested or item.project_id in needed]
-        if len(kept) == len(staying):
-            break
-        staying = kept
-    return [item for item in state.additions if item not in staying]

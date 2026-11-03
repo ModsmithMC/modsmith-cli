@@ -5,12 +5,14 @@ from pathlib import Path
 from typing import Annotated
 
 import typer
+from modsmith import loaders
+from modsmith.errors import UnsupportedError
 from modsmith.instances import Instance
 from modsmith.launcher import Launcher, Profile
+from modsmith.loaders import Loader
 from modsmith.minecraft import GameDir
 
 from ..core.config import Config
-from ..core.detect import detect
 from ..core.errors import AppError
 from ..core.install import check_launcher
 from ..core.names import check_name
@@ -46,6 +48,24 @@ def _profile(launcher: Launcher, text: str) -> Profile:
         f"The official launcher has no installation called {text!r}.",
         hint=f"Its installations: {listed}." if listed else None,
     )
+
+
+def _versions(game: GameDir, version_id: str) -> tuple[str, Loader | None]:
+    """Return the Minecraft version and the loader an installed version starts.
+
+    Raises:
+        AppError: The version, or one it inherits from, is not installed.
+    """
+    try:
+        loader = loaders.detect(game, version_id)
+        version = game.version(version_id)
+    except UnsupportedError as e:
+        raise AppError(
+            f"{e}.", hint="Start it once in the official launcher, then try again."
+        ) from e
+    if loader is not None:
+        return loader.minecraft, loader
+    return version.inherits_from or version.id, None
 
 
 def _inside(path: Path, folder: Path) -> bool:
@@ -98,11 +118,11 @@ def import_command(
     if instance.state is not None:
         raise AppError(f"{path} is already an instance.")
     _check_free_name(app, path)
-    found = detect(game, profile.version_id)
-    loader = loader_label(found.loader, found.loader_version)
+    minecraft, loader = _versions(game, profile.version_id)
+    kind, version = (loader.kind, loader.version) if loader else (None, None)
     app.out.print(
-        f"Import {profile.name} as {path.name}: Minecraft {found.minecraft} "
-        f"with {loader}, in {path}."
+        f"Import {profile.name} as {path.name}: Minecraft {minecraft} "
+        f"with {loader_label(kind, version)}, in {path}."
     )
     if dry_run:
         return
@@ -110,9 +130,9 @@ def import_command(
     path.mkdir(parents=True, exist_ok=True)
     Instance.create(
         path,
-        minecraft=found.minecraft,
-        loader=found.loader,
-        loader_version=found.loader_version,
+        minecraft=minecraft,
+        loader=kind,
+        loader_version=version,
     )
     write_record(path, Record(profile=profile.key))
     if not _inside(path, app.config.instances_dir):
