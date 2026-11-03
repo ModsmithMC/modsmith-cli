@@ -20,7 +20,7 @@ exclude_patterns = ["_build", "assets"]
 
 html_theme = "modsmith"
 html_title = project
-html_baseurl = "https://modsmith.meneither.site/modsmith/"
+html_baseurl = "https://modsmithmc.org/modsmith/"
 html_theme_options = {
     "base_url": html_baseurl,
     "repository": "ModsmithMC/modsmith",

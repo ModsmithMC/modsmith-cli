@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://modsmith.meneither.site/modsmith/">文档</a> · <a href="README.md">English</a> · <strong>简体中文</strong>
+  <a href="https://modsmithmc.org/modsmith/">文档</a> · <a href="README.md">English</a> · <strong>简体中文</strong>
 </p>
 
 ---
