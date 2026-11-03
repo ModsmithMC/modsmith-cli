@@ -12,6 +12,7 @@ from ..core.paths import AppPaths
 from .config_cmd import config_app
 from .context import AppContext, ColorMode, Services
 from .errors import reported
+from .install_cmd import create_command, install_command
 from .list_cmd import list_command
 from .search_cmd import search_command
 from .target import examples
@@ -85,6 +86,23 @@ def root(
     ctx.obj = context
 
 
+app.command(
+    "install",
+    epilog=examples(
+        "modsmith install fabulously-optimized",
+        "modsmith install curseforge:all-the-mods-9 --name atm9",
+        "modsmith install Downloads/pack.mrpack --all-optional",
+        "modsmith install curseforge:some-pack --from Downloads/manual",
+    ),
+)(reported(install_command))
+app.command(
+    "create",
+    epilog=examples(
+        "modsmith create vanilla --minecraft 1.21.1",
+        "modsmith create modded --minecraft 1.21.1 --loader fabric",
+        "modsmith create old --minecraft 1.20.1 --loader forge --loader-version 47.3.0",
+    ),
+)(reported(create_command))
 app.command("list")(reported(list_command))
 app.command(
     "search",
