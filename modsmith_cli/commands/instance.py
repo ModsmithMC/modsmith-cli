@@ -12,6 +12,7 @@ from modsmith.launcher import Launcher, Profile
 from modsmith.loaders import Loader
 from modsmith.minecraft import GameDir
 
+from ..context import AppContext, get
 from ..core.config import Config
 from ..core.errors import AppError
 from ..core.install import check_launcher
@@ -23,11 +24,10 @@ from ..core.registry import (
     remember_external,
     resolve_instance,
 )
-from .contents_cmd import adopt_files
-from .context import AppContext, get
-from .install_cmd import loader_label
-from .target import DryRun, InstanceName, Yes
-from .ui import confirm, confirm_name
+from ..target import DryRun, InstanceName, Yes
+from ..ui import confirm, confirm_name
+from .contents import adopt_files
+from .install import loader_label
 
 
 def _profile(launcher: Launcher, text: str) -> Profile:

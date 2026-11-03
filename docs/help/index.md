@@ -18,7 +18,7 @@ Answers for when something goes wrong, and what changed in each release.
 
 :::
 
-Still stuck? [Open an issue](https://github.com/ModsmithMC/modsmith/issues) with
+Still stuck? [Open an issue](https://github.com/ModsmithMC/modsmith-cli/issues) with
 the command you ran, its full output, your system, and `modsmith --version`.
 
 ```{toctree}

@@ -10,13 +10,13 @@ from pygments.token import Generic, Name, Number, String, Text, _TokenType
 from sphinx.application import Sphinx
 from typer.main import get_command
 
-import modsmith_app
-from modsmith_app.cli.app import app as cli
-from modsmith_app.core.config import SETTINGS
-from modsmith_app.core.paths import HOME_VARIABLE
+import modsmith_cli
+from modsmith_cli.app import app as cli
+from modsmith_cli.core.config import SETTINGS
+from modsmith_cli.core.paths import HOME_VARIABLE
 
 project = "Modsmith"
-release = modsmith_app.__version__
+release = modsmith_cli.__version__
 author = "MeNeither"
 copyright = "2026 MeNeither"
 
@@ -26,11 +26,11 @@ exclude_patterns = ["_build", "assets"]
 html_theme = "modsmith"
 html_title = project
 SITE = "https://modsmithmc.org/"
-html_baseurl = SITE + "modsmith/"
+html_baseurl = SITE + "modsmith-cli/"
 html_theme_options = {
     "base_url": html_baseurl,
     "home_url": SITE,
-    "repository": "ModsmithMC/modsmith",
+    "repository": "ModsmithMC/modsmith-cli",
     "site_name": "Command line",
     "site_title": "Modsmith command line",
     "sites": [

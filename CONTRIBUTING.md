@@ -26,8 +26,9 @@ uv pip install -e ../CurseCraft
 
 | Folder | Holds |
 | :--- | :--- |
-| `modsmith_app/core` | What the command line and the GUI share. It never prints or asks. |
-| `modsmith_app/cli` | The `modsmith` command, built with Typer and Rich. |
+| `modsmith_cli/core` | Settings, paths, instance records and install planning. It never prints or asks, so the desktop app can use it too. |
+| `modsmith_cli/commands` | One module per group of commands, built with Typer. |
+| `modsmith_cli` | `app.py` puts the commands together; `ui.py`, `context.py`, `errors.py` and `target.py` hold what they share, printed with Rich. |
 
 The app uses only the library's public API.
 
@@ -50,7 +51,7 @@ uv run sphinx-build -W -n -b dirhtml docs docs/_build/html
 ```
 
 The documentation in `docs/` is published at
-<https://modsmithmc.org/modsmith/> from `main`. Its command and
+<https://modsmithmc.org/modsmith-cli/> from `main`. Its command and
 settings reference is generated from the code on every build, so a new option
 only needs good help text.
 

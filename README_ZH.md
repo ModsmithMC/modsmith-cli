@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ModsmithMC/modsmith/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ModsmithMC/modsmith/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
+  <a href="https://github.com/ModsmithMC/modsmith-cli/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ModsmithMC/modsmith-cli/ci.yml?branch=main&style=flat-square&label=CI&logo=github" alt="CI"></a>
   <a href="https://pypi.org/project/modsmith-cli/"><img src="https://img.shields.io/pypi/v/modsmith-cli?style=flat-square&color=3c8527" alt="PyPI"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.12%2B-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.12+"></a>
   <img src="https://img.shields.io/badge/status-alpha-orange?style=flat-square" alt="Alpha">
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://modsmithmc.org/">网站</a> · <a href="https://modsmithmc.org/modsmith/">文档</a> · <a href="README.md">English</a> · <strong>简体中文</strong>
+  <a href="https://modsmithmc.org/">网站</a> · <a href="https://modsmithmc.org/modsmith-cli/">文档</a> · <a href="README.md">English</a> · <strong>简体中文</strong>
 </p>
 
 ---
@@ -221,7 +221,7 @@ Modsmith 会读出它的 Minecraft 和加载器版本，并识别其中的模组
 
 | | 简介 | 代码 |
 | :--- | :--- | :--- |
-| [命令行](https://modsmithmc.org/modsmith/) | 在终端里安装整合包 | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
+| [命令行](https://modsmithmc.org/modsmith-cli/) | 在终端里安装整合包 | [ModsmithMC/modsmith-cli](https://github.com/ModsmithMC/modsmith-cli) |
 | [Python 库](https://modsmithmc.org/modsmith-python/) | 打造你自己的整合包工具 | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
 | [网站](https://modsmithmc.org/) | 项目主页 | [ModsmithMC/modsmithmc.github.io](https://github.com/ModsmithMC/modsmithmc.github.io) |
 

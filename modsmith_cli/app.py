@@ -9,10 +9,9 @@ from typing import Annotated, TextIO
 import typer
 from rich.logging import RichHandler
 
-from .. import __version__
-from ..core.paths import AppPaths
-from .config_cmd import config_app
-from .contents_cmd import (
+from . import __version__
+from .commands.config import config_app
+from .commands.contents import (
     add_command,
     adopt_command,
     disable_command,
@@ -22,15 +21,16 @@ from .contents_cmd import (
     show_command,
     unpin_command,
 )
+from .commands.discovery import info_command, loaders_command
+from .commands.install import create_command, install_command
+from .commands.instance import delete_command, import_command, move_command
+from .commands.list import list_command
+from .commands.search import search_command
+from .commands.update import update_command
 from .context import AppContext, ColorMode, Services
-from .discovery_cmd import info_command, loaders_command
+from .core.paths import AppPaths
 from .errors import reported
-from .install_cmd import create_command, install_command
-from .instance_cmd import delete_command, import_command, move_command
-from .list_cmd import list_command
-from .search_cmd import search_command
 from .target import examples
-from .update_cmd import update_command
 
 app = typer.Typer(
     help=(

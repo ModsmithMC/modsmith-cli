@@ -5,9 +5,9 @@ from typing import Annotated
 import typer
 from rich.table import Table
 
+from ..context import get
 from ..core import config as settings
-from .context import get
-from .errors import reported
+from ..errors import reported
 
 config_app = typer.Typer(
     help="Show and change settings. With no command, show them all.",

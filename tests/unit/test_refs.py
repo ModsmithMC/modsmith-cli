@@ -1,7 +1,7 @@
 import pytest
 
-from modsmith_app.core.errors import AppError
-from modsmith_app.core.refs import LocalPack, ProjectRef, parse_pack, parse_project
+from modsmith_cli.core.errors import AppError
+from modsmith_cli.core.refs import LocalPack, ProjectRef, parse_pack, parse_project
 
 
 @pytest.mark.parametrize(

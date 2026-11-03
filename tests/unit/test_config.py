@@ -2,9 +2,9 @@ import sys
 
 import pytest
 
-from modsmith_app.core import config as settings
-from modsmith_app.core.config import load_config, save_setting, sources
-from modsmith_app.core.errors import AppError
+from modsmith_cli.core import config as settings
+from modsmith_cli.core.config import load_config, save_setting, sources
+from modsmith_cli.core.errors import AppError
 
 
 def test_defaults(paths, tmp_path):

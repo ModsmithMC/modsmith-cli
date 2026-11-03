@@ -10,11 +10,11 @@ from modsmith.platforms import ProjectType, SearchResults, SearchSort
 from rich.table import Table
 from rich.text import Text
 
+from ..context import AppContext, get
 from ..core.config import PLATFORMS
 from ..core.errors import AppError
 from ..core.platforms import explained, platform_title
-from .context import AppContext, get
-from .errors import report
+from ..errors import report
 
 
 class Kind(StrEnum):

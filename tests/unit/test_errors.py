@@ -9,8 +9,8 @@ from modsmith.errors import (
 )
 from modsmith.packs import FileRef, PackEntry
 
-from modsmith_app.cli.errors import describe
-from modsmith_app.core.errors import AppError
+from modsmith_cli.core.errors import AppError
+from modsmith_cli.errors import describe
 
 
 @pytest.mark.parametrize(

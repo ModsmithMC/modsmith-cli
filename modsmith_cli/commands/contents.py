@@ -12,17 +12,17 @@ from modsmith.platforms import ProjectType
 from rich.table import Table
 from rich.text import Text
 
+from ..context import AppContext, get
 from ..core.config import PLATFORMS
 from ..core.contents import find_contents
 from ..core.errors import AppError
 from ..core.platforms import explained
 from ..core.refs import parse_project
 from ..core.registry import resolve_instance, split_target
-from .context import AppContext, get
-from .errors import report
-from .install_cmd import From, Overwrite, loader_label
-from .target import DryRun, InstanceName, Yes
-from .ui import cancellable, confirm, progress, show_plan
+from ..errors import report
+from ..target import DryRun, InstanceName, Yes
+from ..ui import cancellable, confirm, progress, show_plan
+from .install import From, Overwrite, loader_label
 
 SOURCES = {"pack": "pack", "addition": "added", "user": "yours"}
 

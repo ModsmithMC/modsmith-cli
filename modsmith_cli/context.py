@@ -14,9 +14,9 @@ from modsmith.launcher import is_running
 from modsmith.platforms import Platform
 from rich.console import Console
 
-from ..core.config import Config, load_config
-from ..core.paths import AppPaths
-from ..core.platforms import PlatformOpener, open_platform
+from .core.config import Config, load_config
+from .core.paths import AppPaths
+from .core.platforms import PlatformOpener, open_platform
 
 
 class ColorMode(StrEnum):

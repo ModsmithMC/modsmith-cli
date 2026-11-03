@@ -8,11 +8,11 @@ from modsmith.minecraft import GameDir
 from typer.testing import CliRunner, Result
 
 import tests.lib.loaders  # noqa: F401  Registers the test loader with the library.
-from modsmith_app.cli import app
-from modsmith_app.cli.context import Services
-from modsmith_app.core.config import Config, load_config
-from modsmith_app.core.paths import AppPaths
-from modsmith_app.core.platforms import open_platform as real_open_platform
+from modsmith_cli.app import app
+from modsmith_cli.context import Services
+from modsmith_cli.core.config import Config, load_config
+from modsmith_cli.core.paths import AppPaths
+from modsmith_cli.core.platforms import open_platform as real_open_platform
 from tests.lib.catalog import Catalog
 from tests.lib.server import LocalServer
 
