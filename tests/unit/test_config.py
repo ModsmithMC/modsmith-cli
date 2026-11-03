@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 
 from modsmith_app.core import config as settings
@@ -7,8 +9,15 @@ from modsmith_app.core.errors import AppError
 
 def test_defaults(paths, tmp_path):
     config = load_config(paths)
+    user = tmp_path / "user"
+    # The official launcher's own folder on each system.
+    launcher = (
+        user / "Library" / "Application Support" / "minecraft"
+        if sys.platform == "darwin"
+        else user / ".minecraft"
+    )
     assert config.instances_dir == paths.default_instances_dir
-    assert config.game_dir == (tmp_path / "user" / ".minecraft").resolve()
+    assert config.game_dir == launcher.resolve()
     assert config.curseforge_api_key is None
     assert config.default_platform == "modrinth"
     assert config.allow_prereleases is False
