@@ -45,6 +45,7 @@ def write_mrpack(
     name: str = "Test Pack",
     version: str = "1.0",
     loader: dict[str, str] | None = None,
+    minecraft: str = "1.21.1",
 ) -> Path:
     index = {
         "formatVersion": 1,
@@ -53,7 +54,7 @@ def write_mrpack(
         "versionId": version,
         "files": list(files),
         "dependencies": {
-            "minecraft": "1.21.1",
+            "minecraft": minecraft,
             **({"test-loader": "1"} if loader is None else loader),
         },
     }

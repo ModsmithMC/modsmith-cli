@@ -201,3 +201,15 @@ def cancellable() -> Generator[CancelToken]:
         yield token
     finally:
         signal.signal(signal.SIGINT, previous)
+
+
+def show_changelog(app: AppContext, title: str, text: str, *, lines: int) -> None:
+    """Print a changelog under a heading, cut to its first lines unless verbose."""
+    kept = [line.rstrip() for line in text.strip().splitlines()]
+    if not kept:
+        return
+    app.out.print(Text(title, style="bold"))
+    shown = kept if app.verbose else kept[:lines]
+    app.out.print(Text("\n".join(shown)))
+    if len(shown) < len(kept):
+        app.out.print(Text("... (-v shows all of it)", style="dim"))

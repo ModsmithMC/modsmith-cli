@@ -24,9 +24,11 @@ from .context import AppContext, ColorMode, Services
 from .discovery_cmd import info_command, loaders_command
 from .errors import reported
 from .install_cmd import create_command, install_command
+from .instance_cmd import delete_command, import_command, move_command
 from .list_cmd import list_command
 from .search_cmd import search_command
 from .target import examples
+from .update_cmd import update_command
 
 app = typer.Typer(
     help=(
@@ -175,6 +177,30 @@ app.command(
         "modsmith loaders fabric 1.21.1", "modsmith loaders forge 1.20.1 --all"
     ),
 )(reported(loaders_command))
+app.command(
+    "update",
+    epilog=examples(
+        "modsmith update survival",
+        "modsmith update survival --dry-run",
+        "modsmith update survival --pack-only --optional shaders",
+        "modsmith update atm9 --file Downloads/atm9-1.2.zip",
+    ),
+)(reported(update_command))
+app.command(
+    "import",
+    epilog=examples(
+        'modsmith import "My Fabric world"', "modsmith import old-pack --dry-run"
+    ),
+)(reported(import_command))
+app.command(
+    "move",
+    epilog=examples(
+        "modsmith move survival creative", "modsmith move survival D:/Games/survival"
+    ),
+)(reported(move_command))
+app.command("delete", epilog=examples("modsmith delete survival"))(
+    reported(delete_command)
+)
 app.add_typer(config_app, name="config")
 
 
