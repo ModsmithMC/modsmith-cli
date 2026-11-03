@@ -10,6 +10,8 @@ from modsmith_app.core.registry import (
     locate,
     open_instance,
     remember_external,
+    resolve_instance,
+    split_target,
 )
 
 
@@ -79,3 +81,33 @@ def test_external_list(paths, tmp_path):
     paths.external_file.write_text("[")
     with pytest.raises(AppError, match="corrupt"):
         external_paths(paths)
+
+
+def test_resolve_uses_the_only_instance(config, paths):
+    with pytest.raises(AppError, match="no instances yet"):
+        resolve_instance(None, config, paths)
+    Instance.create(config.instances_dir / "solo", minecraft="1.21.1")
+    instance, _ = resolve_instance(None, config, paths)
+    assert instance.path.name == "solo"
+    Instance.create(config.instances_dir / "other", minecraft="1.21.1")
+    with pytest.raises(AppError, match="Name the instance") as caught:
+        resolve_instance(None, config, paths)
+    assert caught.value.hint == "Your instances: other, solo."
+
+
+def test_external_instances_are_found_by_name(config, paths, tmp_path):
+    Instance.create(tmp_path / "far-away", minecraft="1.21.1")
+    remember_external(paths, tmp_path / "far-away")
+    instance, _ = resolve_instance("far-away", config, paths)
+    assert instance.path == tmp_path / "far-away"
+
+
+def test_split_target(config, paths):
+    Instance.create(config.instances_dir / "solo", minecraft="1.21.1")
+    instance, _, items = split_target(["solo", "sodium", "iris"], config, paths)
+    assert (instance.path.name, items) == ("solo", ["sodium", "iris"])
+    instance, _, items = split_target(["sodium", "iris"], config, paths)
+    assert (instance.path.name, items) == ("solo", ["sodium", "iris"])
+    Instance.create(config.instances_dir / "other", minecraft="1.21.1")
+    with pytest.raises(AppError, match="Name the instance"):
+        split_target(["sodium"], config, paths)

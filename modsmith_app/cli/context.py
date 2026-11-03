@@ -2,18 +2,34 @@
 
 import dataclasses
 import os
-from collections.abc import Mapping
+import sys
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
+from enum import StrEnum
 from functools import cached_property
 from typing import cast
 
 import typer
+from modsmith.launcher import is_running
 from modsmith.platforms import Platform
 from rich.console import Console
 
 from ..core.config import Config, load_config
 from ..core.paths import AppPaths
 from ..core.platforms import PlatformOpener, open_platform
+
+
+class ColorMode(StrEnum):
+    """When to use colour."""
+
+    AUTO = "auto"
+    ALWAYS = "always"
+    NEVER = "never"
+
+
+def _interactive() -> bool:
+    """Return whether a person can answer questions on this terminal."""
+    return sys.stdin.isatty() and sys.stdout.isatty()
 
 
 @dataclass(frozen=True)
@@ -25,10 +41,23 @@ class Services:
     Attributes:
         open_platform: Opens a platform by name.
         environ: The environment variables, or None for the real ones.
+        interactive: Whether a person can answer questions.
+        launcher_running: Whether the official launcher is open.
     """
 
     open_platform: PlatformOpener = open_platform
     environ: Mapping[str, str] | None = None
+    interactive: Callable[[], bool] = _interactive
+    launcher_running: Callable[[], bool] = is_running
+
+
+def _console(color: ColorMode, *, stderr: bool) -> Console:
+    """Make a console that follows the colour choice and ``NO_COLOR``."""
+    if color == ColorMode.ALWAYS:
+        return Console(stderr=stderr, force_terminal=True)
+    if color == ColorMode.NEVER:
+        return Console(stderr=stderr, no_color=True, color_system=None)
+    return Console(stderr=stderr)
 
 
 @dataclass
@@ -39,6 +68,8 @@ class AppContext:
         paths: The app's folders.
         services: The outside world.
         overrides: Settings given as command-line options.
+        verbose: How much detail to show, from ``-v``.
+        color: When to use colour.
         out: Where results go.
         err: Where errors, warnings and progress go.
     """
@@ -46,8 +77,14 @@ class AppContext:
     paths: AppPaths
     services: Services
     overrides: dict[str, object] = field(default_factory=dict[str, object])
-    out: Console = field(default_factory=Console)
-    err: Console = field(default_factory=lambda: Console(stderr=True))
+    verbose: int = 0
+    color: ColorMode = ColorMode.AUTO
+    out: Console = field(init=False)
+    err: Console = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.out = _console(self.color, stderr=False)
+        self.err = _console(self.color, stderr=True)
 
     @property
     def environ(self) -> Mapping[str, str]:

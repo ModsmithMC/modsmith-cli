@@ -209,3 +209,24 @@ def test_summaries_stay_on_one_line(run, catalogs):
     result = run("search", "dex")
     row = next(line for line in result.stdout.splitlines() if "modrinth:dex" in line)
     assert "First line. Second line." in row
+
+
+def test_search_sorts_by_downloads(run, catalogs):
+    catalogs["modrinth"] = Catalog(
+        project("map-small", downloads=5), project("map-big", downloads=500)
+    )
+    result = run("search", "map", "--sort", "downloads")
+    rows = [line for line in result.stdout.splitlines() if "modrinth:map" in line]
+    assert ["map-big" in rows[0], "map-small" in rows[1]] == [True, True]
+
+
+def test_help_leads_with_examples(run):
+    result = run("search", "--help")
+    assert "Examples:" in result.stdout
+    assert "  modsmith search sodium\n" in result.stdout
+
+
+def test_color_can_be_turned_off(run, catalogs):
+    catalogs["modrinth"] = Catalog(project("jei"))
+    result = run("--color", "never", "search", "jei")
+    assert "\x1b[" not in result.stdout

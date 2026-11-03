@@ -11,3 +11,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - The `modsmith` command, with `list`, `search` and `config`.
 - Settings in `config.toml`, overridden by environment variables and command
   line options. `MODSMITH_HOME` keeps everything in one folder.
+- `search --sort` orders results by relevance, downloads, popularity, newest or
+  last update.
+- `--color` and `NO_COLOR` control colour. Help shows examples.
+- Errors name every file that failed to download, and where to get files that
+  must be downloaded by hand.

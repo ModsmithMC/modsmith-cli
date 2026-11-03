@@ -10,10 +10,11 @@ from rich.logging import RichHandler
 from .. import __version__
 from ..core.paths import AppPaths
 from .config_cmd import config_app
-from .context import AppContext, Services
+from .context import AppContext, ColorMode, Services
 from .errors import reported
 from .list_cmd import list_command
 from .search_cmd import search_command
+from .target import examples
 
 app = typer.Typer(
     help=(
@@ -49,6 +50,10 @@ def root(
             "--verbose", "-v", count=True, help="Show more detail. Repeat for more."
         ),
     ] = 0,
+    color: Annotated[
+        ColorMode,
+        typer.Option("--color", help="When to use colour. NO_COLOR also turns it off."),
+    ] = ColorMode.AUTO,
     version: Annotated[
         bool,
         typer.Option(
@@ -72,7 +77,7 @@ def root(
         overrides["instances_dir"] = instances_dir.expanduser()
     if game_dir is not None:
         overrides["game_dir"] = game_dir.expanduser()
-    context = AppContext(paths, services, overrides)
+    context = AppContext(paths, services, overrides, verbose=verbose, color=color)
     if verbose:
         level = logging.INFO if verbose == 1 else logging.DEBUG
         handler = RichHandler(console=context.err, show_path=False)
@@ -81,7 +86,15 @@ def root(
 
 
 app.command("list")(reported(list_command))
-app.command("search")(reported(search_command))
+app.command(
+    "search",
+    epilog=examples(
+        "modsmith search sodium",
+        'modsmith search "fabulously optimized" --type modpack',
+        "modsmith search shaders --type shader --sort downloads",
+        "modsmith search jei --platform all --minecraft 1.20.1 --loader forge",
+    ),
+)(reported(search_command))
 app.add_typer(config_app, name="config")
 
 

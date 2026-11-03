@@ -6,7 +6,7 @@ from typing import Annotated
 
 import typer
 from modsmith.errors import ModsmithError
-from modsmith.platforms import ProjectType, SearchResults
+from modsmith.platforms import ProjectType, SearchResults, SearchSort
 from rich.table import Table
 from rich.text import Text
 
@@ -42,11 +42,31 @@ class Query:
     kind: ProjectType
     minecraft: str | None
     loader: str | None
+    sort: SearchSort
     limit: int
 
 
 # Narrower than this, the summary is left out.
 MIN_SUMMARY = 12
+
+
+class Order(StrEnum):
+    """How to order search results."""
+
+    RELEVANCE = "relevance"
+    DOWNLOADS = "downloads"
+    POPULARITY = "popularity"
+    NEWEST = "newest"
+    UPDATED = "updated"
+
+
+ORDERS: dict[Order, SearchSort] = {
+    Order.RELEVANCE: "relevance",
+    Order.DOWNLOADS: "downloads",
+    Order.POPULARITY: "popularity",
+    Order.NEWEST: "newest",
+    Order.UPDATED: "updated",
+}
 
 
 class Where(StrEnum):
@@ -124,6 +144,7 @@ def _search_one(app: AppContext, name: str, query: Query, title: str | None) -> 
             project_type=query.kind,
             game_version=query.minecraft,
             loader=query.loader,
+            sort=query.sort,
             limit=query.limit,
         )
     if results.projects:
@@ -157,11 +178,14 @@ def search_command(
     loader: Annotated[
         str | None, typer.Option("--loader", "-l", help="Only this mod loader.")
     ] = None,
-    limit: Annotated[int, typer.Option("--limit", "-n", min=1, max=50)] = 10,
+    sort: Annotated[
+        Order, typer.Option("--sort", "-s", help="How to order the results.")
+    ] = Order.RELEVANCE,
+    limit: Annotated[int, typer.Option("--limit", "-n", min=1, max=100)] = 10,
 ) -> None:
     """Search for mods, modpacks, resource packs or shaders."""
     app = get(ctx)
-    search = Query(query, KINDS[kind], minecraft, loader, limit)
+    search = Query(query, KINDS[kind], minecraft, loader, ORDERS[sort], limit)
     names = (
         list(PLATFORMS)
         if where == Where.ALL
@@ -176,6 +200,6 @@ def search_command(
             if len(names) == 1:
                 raise
             failed += 1
-            report(e, prefix=f"Skipped {name}: ")
+            report(e, app.err, prefix=f"Skipped {name}: ")
     if failed == len(names):
         raise typer.Exit(1)
