@@ -29,14 +29,11 @@ from .context import AppContext, get
 from .target import DryRun, Yes
 from .ui import cancellable, confirm, progress, show_plan
 
-# Packs name some loaders after their library, such as fabric-loader.
 LOADER_NAMES = {
     "forge": "Forge",
     "neoforge": "NeoForge",
     "fabric": "Fabric",
-    "fabric-loader": "Fabric",
     "quilt": "Quilt",
-    "quilt-loader": "Quilt",
 }
 
 

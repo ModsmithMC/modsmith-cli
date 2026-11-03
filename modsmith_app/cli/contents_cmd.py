@@ -6,14 +6,14 @@ from typing import Annotated
 
 import typer
 from modsmith import metadata
-from modsmith.errors import DependencyError, ModsmithError
+from modsmith.errors import DependencyError, InstanceError, ModsmithError
 from modsmith.instances import Changes, Instance, Plan
 from modsmith.platforms import ProjectType
 from rich.table import Table
 from rich.text import Text
 
 from ..core.config import PLATFORMS
-from ..core.contents import find_contents, removal_preview
+from ..core.contents import find_contents
 from ..core.errors import AppError
 from ..core.platforms import explained
 from ..core.refs import parse_project
@@ -191,22 +191,24 @@ def remove_command(
 ) -> None:
     """Remove projects you added, and the dependencies nothing else needs."""
     app = get(ctx)
-    instance, state, names = split_target(items, app.config, app.paths)
+    instance, _, names = split_target(items, app.config, app.paths)
     if not names:
         raise AppError("Name at least one project to remove.")
-    going = removal_preview(state, names, keep_dependencies=keep_dependencies)
-    show_plan(
-        app,
-        Changes(removed=tuple(item.path for item in going)),
-        title=f"Remove from {instance.path.name}",
-    )
-    app.out.print(Text("Files you changed are kept.", style="dim"))
+    try:
+        preview = instance.remove(
+            *names, keep_dependencies=keep_dependencies, dry_run=True
+        )
+    except InstanceError as e:
+        raise AppError(
+            str(e) + ".",
+            hint="Files from the pack cannot be removed, but you can turn them off "
+            "with: modsmith disable",
+        ) from e
+    show_plan(app, preview, title=f"Remove from {instance.path.name}")
     if dry_run:
         return
     confirm(app, "Remove them?", yes=yes)
-    changes = instance.remove(*names, keep_dependencies=keep_dependencies)
-    for path in changes.orphaned:
-        app.out.print(Text(f"  ! kept {path}, because you changed it", style="yellow"))
+    instance.remove(*names, keep_dependencies=keep_dependencies)
     app.out.print(f"Removed from {instance.path.name}.")
 
 

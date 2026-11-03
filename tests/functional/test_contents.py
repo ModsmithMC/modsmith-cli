@@ -141,7 +141,8 @@ def test_remove_keeps_dependencies_and_changed_files(run, survival, mods):
     result = run("remove", "survival", "iris", "--keep-deps", "-y")
 
     assert result.exit_code == 0, result.output
-    assert "kept mods/iris-1.jar, because you changed it" in result.stdout
+    assert "  ! mods/iris-1.jar" in result.stdout
+    assert "1 of your changes kept." in result.stdout
     assert {item.slug for item in survival.additions} == {"sodium", "library"}
 
 
