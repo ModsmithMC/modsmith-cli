@@ -158,3 +158,18 @@ def test_searching_both_platforms(run, catalogs, monkeypatch):
     result = run("search", "jei", "-p", "all")
     assert "modrinth:jei" in result.stdout
     assert "curseforge:jei" in result.stdout
+
+
+def test_search_never_shortens_the_name_to_copy(run, catalogs, monkeypatch):
+    monkeypatch.setenv("COLUMNS", "60")
+    catalogs["modrinth"] = Catalog(
+        project("reeses-sodium-options", summary="Alternative options " * 5)
+    )
+    result = run("search", "sodium")
+    assert "  modrinth:reeses-sodium-options\n" in result.stdout
+    assert "0 downloads" in result.stdout
+
+    monkeypatch.setenv("COLUMNS", "120")
+    result = run("search", "sodium")
+    assert "Downloads" in result.stdout
+    assert "Alternative options" in result.stdout

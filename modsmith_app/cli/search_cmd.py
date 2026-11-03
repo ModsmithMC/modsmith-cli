@@ -42,6 +42,10 @@ class Query:
     limit: int
 
 
+# Narrower than this, the summary is left out.
+MIN_SUMMARY = 12
+
+
 class Where(StrEnum):
     """The platforms to search."""
 
@@ -58,20 +62,51 @@ def _count(value: int) -> str:
     return str(value)
 
 
-def _table(results: SearchResults, title: str | None) -> Table:
-    table = Table(title=title, title_justify="left", box=None, pad_edge=False)
-    table.add_column("Name", no_wrap=True)
-    table.add_column("Use as", no_wrap=True)
-    table.add_column("Downloads", justify="right")
-    table.add_column("Summary", overflow="ellipsis", no_wrap=True, max_width=60)
-    for project in results.projects:
-        table.add_row(
+def _table(results: SearchResults, title: str | None, width: int) -> Table | None:
+    """Lay out results so the name to copy fits, and the summary takes the rest.
+
+    Returns None if the terminal is too narrow for the columns that must fit.
+    """
+    rows = [
+        (
             project.name,
             f"{project.platform}:{project.slug}",
             _count(project.downloads),
             project.summary,
         )
+        for project in results.projects
+    ]
+    headers = ("Name", "Use as", "Downloads")
+    widths = [
+        max(len(header), *(len(row[index]) for row in rows))
+        for index, header in enumerate(headers)
+    ]
+    # Rich squeezes every column to fit a long line, so the summary gets a cap.
+    room = width - sum(widths) - 2 * len(widths)
+    if room < 0:
+        return None
+    table = Table(title=title, title_justify="left", box=None, pad_edge=False)
+    table.add_column("Name", no_wrap=True)
+    table.add_column("Use as", no_wrap=True)
+    table.add_column("Downloads", justify="right", no_wrap=True)
+    if room >= MIN_SUMMARY:
+        table.add_column("Summary", no_wrap=True, overflow="ellipsis", max_width=room)
+    for row in rows:
+        table.add_row(*row[: len(table.columns)])
     return table
+
+
+def _lines(results: SearchResults, title: str | None) -> Text:
+    """List results one per pair of lines, for narrow terminals."""
+    text = Text()
+    if title:
+        text.append(f"{title}\n", style="italic")
+    for project in results.projects:
+        text.append(project.name, style="bold")
+        text.append(f"  {_count(project.downloads)} downloads\n", style="dim")
+        text.append(f"  {project.platform}:{project.slug}\n")
+    text.rstrip()
+    return text
 
 
 def _search_one(app: AppContext, name: str, query: Query, title: str | None) -> None:
@@ -84,7 +119,11 @@ def _search_one(app: AppContext, name: str, query: Query, title: str | None) -> 
             limit=query.limit,
         )
     if results.projects:
-        app.out.print(_table(results, title))
+        table = _table(results, title, app.out.width)
+        if table is None:
+            app.out.print(_lines(results, title), soft_wrap=True)
+        else:
+            app.out.print(table)
         shown = len(results.projects)
         if results.total > shown:
             app.err.print(f"Showing {shown} of {results.total}.", style="dim")
