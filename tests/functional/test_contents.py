@@ -25,7 +25,7 @@ def mods(server, catalogs):
 
     needs = [Dependency("required", "sodium"), Dependency("required", "library")]
     catalog = Catalog(
-        project("sodium", downloads=50),
+        project("sodium", downloads=50, author="jellysquid3"),
         project("iris", downloads=40),
         project("library"),
         project("other"),
@@ -220,6 +220,7 @@ def test_info(run, mods):
     assert result.exit_code == 0, result.output
     assert "Sodium" in result.stdout
     assert "About sodium" in result.stdout
+    assert "By         jellysquid3" in result.stdout.splitlines()[2]
     assert "Downloads  50" in result.stdout
     assert "What changed in Sodium 1" in result.stdout
     assert "Fewer crashes." in result.stdout
