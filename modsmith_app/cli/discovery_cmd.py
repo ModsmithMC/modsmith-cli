@@ -14,6 +14,7 @@ from ..core.refs import parse_project
 from .context import get
 from .install_cmd import LOADER_NAMES
 from .search_cmd import KINDS, Kind
+from .ui import show_changelog
 
 RELEASES_SHOWN = 5
 LOADERS_SHOWN = 15
@@ -22,12 +23,6 @@ CHANGELOG_LINES = 12
 
 def _count(number: int) -> str:
     return f"{number:,}"
-
-
-def _trimmed(text: str, lines: int) -> tuple[str, bool]:
-    """Keep the first non-empty lines of a changelog."""
-    kept = [line.rstrip() for line in text.strip().splitlines()]
-    return "\n".join(kept[:lines]), len(kept) > lines
 
 
 def info_command(
@@ -103,12 +98,13 @@ def info_command(
         )
     app.out.print(listed)
     if changelog:
-        text, cut = _trimmed(changelog, CHANGELOG_LINES)
         app.out.print()
-        app.out.print(Text(f"What changed in {releases[0].name}", style="bold"))
-        app.out.print(Text(text))
-        if cut:
-            app.out.print(Text("...", style="dim"))
+        show_changelog(
+            app,
+            f"What changed in {releases[0].name}",
+            changelog,
+            lines=CHANGELOG_LINES,
+        )
 
 
 def loaders_command(

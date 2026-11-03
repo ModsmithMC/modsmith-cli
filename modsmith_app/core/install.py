@@ -10,7 +10,7 @@ from modsmith.launcher import Launcher, icon_data_uri
 from modsmith.minecraft import GameDir
 from modsmith.net import Session
 from modsmith.packs import Modpack, PackEntry, load
-from modsmith.platforms import Platform, Project
+from modsmith.platforms import Platform, Project, Release
 from modsmith.progress import CancelToken, ProgressCallback
 
 from .errors import AppError
@@ -46,6 +46,54 @@ def _resolved(pack: Modpack, open_platform: Callable[[str], Platform]) -> Modpac
         return platform.resolve(pack)
 
 
+def latest_pack(
+    platform: Platform, name: str, *, allow_prereleases: bool
+) -> tuple[Project, Release]:
+    """Find a modpack project and its newest release.
+
+    Raises:
+        AppError: The project is not a modpack, or has no release.
+        NetworkError: The platform could not be reached.
+    """
+    project = platform.get_project(name, project_type="modpack")
+    if project.project_type != "modpack":
+        raise AppError(
+            f"{project.name} is a {project.project_type}, not a modpack.",
+            hint=f"Add it to an instance with: modsmith add <instance> "
+            f"{platform.name}:{name}",
+        )
+    release = platform.latest_release(project, release_only=not allow_prereleases)
+    if release is None:
+        raise AppError(
+            f"{project.name} has no release to install.",
+            hint="Alpha and beta releases count if you run: "
+            "modsmith config set allow_prereleases true",
+        )
+    return project, release
+
+
+def download_pack(
+    platform: Platform,
+    project: Project,
+    release: Release,
+    open_platform: Callable[[str], Platform],
+    *,
+    cache_dir: Path,
+    progress: ProgressCallback | None = None,
+    cancel: CancelToken | None = None,
+) -> FetchedPack:
+    """Download a pack release into the cache and read it.
+
+    Raises:
+        PackError: The file is not a valid pack.
+        NetworkError: A platform could not be reached.
+    """
+    folder = cache_dir / "packs" / platform.name
+    path = platform.fetch(release, folder, progress=progress, cancel=cancel)
+    pack = _resolved(load(path), open_platform)
+    return FetchedPack(pack, PackSource(platform.name, project.id, release.id), project)
+
+
 def fetch_pack(
     ref: ProjectRef | LocalPack,
     open_platform: Callable[[str], Platform],
@@ -78,24 +126,18 @@ def fetch_pack(
         source = PackSource(file=str(ref.path.resolve()))
         return FetchedPack(_resolved(pack, open_platform), source)
     with open_platform(ref.platform) as platform:
-        project = platform.get_project(ref.name, project_type="modpack")
-        if project.project_type != "modpack":
-            raise AppError(
-                f"{project.name} is a {project.project_type}, not a modpack.",
-                hint=f"Add it to an instance with: modsmith add <instance> {ref}",
-            )
-        release = platform.latest_release(project, release_only=not allow_prereleases)
-        if release is None:
-            raise AppError(
-                f"{project.name} has no release to install.",
-                hint="Alpha and beta releases count if you run: "
-                "modsmith config set allow_prereleases true",
-            )
-        folder = cache_dir / "packs" / platform.name
-        path = platform.fetch(release, folder, progress=progress, cancel=cancel)
-    pack = _resolved(load(path), open_platform)
-    source = PackSource(platform.name, project.id, release.id)
-    return FetchedPack(pack, source, project)
+        project, release = latest_pack(
+            platform, ref.name, allow_prereleases=allow_prereleases
+        )
+        return download_pack(
+            platform,
+            project,
+            release,
+            open_platform,
+            cache_dir=cache_dir,
+            progress=progress,
+            cancel=cancel,
+        )
 
 
 def optional_entries(pack: Modpack) -> list[PackEntry]:

@@ -21,6 +21,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   adds mods, resource packs and shaders with what they need, and `remove`
   takes them away with the dependencies nothing else needs. `enable`,
   `disable`, `pin`, `unpin` and `adopt` manage what is there.
+- `update` updates an instance's pack, keeping the optional files you chose,
+  and the projects you added, showing what changed in each release. A pack
+  installed from a file updates with `--file`.
+- `import` turns an installation you made in the official launcher into an
+  instance, reading its Minecraft and loader versions and recognising its mods.
+- `move` renames an instance or moves its folder, and `delete` deletes it after
+  you type its name. Both keep the launcher installation in step.
 - `info` shows a project's details, newest releases and changelog, and
   `loaders` lists a mod loader's versions.
 - `search --sort` orders results by relevance, downloads, popularity, newest or

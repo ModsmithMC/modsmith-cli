@@ -1,5 +1,6 @@
 """Commands that look at and change what an instance holds."""
 
+from collections.abc import Sequence
 from enum import StrEnum
 from typing import Annotated
 
@@ -270,18 +271,14 @@ class AdoptFrom(StrEnum):
     ALL = "all"
 
 
-def adopt_command(
-    ctx: typer.Context,
-    name: InstanceName = None,
-    where: Annotated[
-        AdoptFrom,
-        typer.Option("--platform", "-p", help="Which platforms may recognise files."),
-    ] = AdoptFrom.ALL,
-) -> None:
-    """Recognise files you put in an instance, so they can be updated and removed."""
-    app = get(ctx)
-    instance, _ = resolve_instance(name, app.config, app.paths)
-    names = list(PLATFORMS) if where == AdoptFrom.ALL else [where.value]
+def adopt_files(app: AppContext, instance: Instance, names: Sequence[str]) -> int:
+    """Ask each platform to recognise the player's files, and say what it found.
+
+    With several platforms, one that cannot be used is skipped with a note.
+
+    Returns:
+        How many files were recognised.
+    """
     found = 0
     for platform_name in names:
         try:
@@ -305,3 +302,19 @@ def adopt_command(
         app.out.print(f"{files} can now be updated and removed like added ones.")
     else:
         app.out.print("No unrecognised files were found on these platforms.")
+    return found
+
+
+def adopt_command(
+    ctx: typer.Context,
+    name: InstanceName = None,
+    where: Annotated[
+        AdoptFrom,
+        typer.Option("--platform", "-p", help="Which platforms may recognise files."),
+    ] = AdoptFrom.ALL,
+) -> None:
+    """Recognise files you put in an instance, so they can be updated and removed."""
+    app = get(ctx)
+    instance, _ = resolve_instance(name, app.config, app.paths)
+    names = list(PLATFORMS) if where == AdoptFrom.ALL else [where.value]
+    adopt_files(app, instance, names)
