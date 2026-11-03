@@ -1,8 +1,10 @@
 """The ``modsmith`` command and its global options."""
 
+import io
 import logging
+import sys
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, TextIO
 
 import typer
 from rich.logging import RichHandler
@@ -204,6 +206,19 @@ app.command("delete", epilog=examples("modsmith delete survival"))(
 app.add_typer(config_app, name="config")
 
 
+def tolerate_unencodable(*streams: TextIO) -> None:
+    """Write characters an output cannot encode as ``?`` instead of failing.
+
+    Piped or redirected output uses the system code page, so that the shell
+    reading it decodes it correctly. On Windows that code page often cannot
+    hold the emoji found in project names and summaries.
+    """
+    for stream in streams:
+        if isinstance(stream, io.TextIOWrapper):
+            stream.reconfigure(errors="replace")
+
+
 def main() -> None:
     """Run the command line."""
+    tolerate_unencodable(sys.stdout, sys.stderr)
     app()
