@@ -31,21 +31,28 @@ $ modsmith install https://www.curseforge.com/minecraft/modpacks/all-the-mods-9
 To make CurseForge the default, run
 `modsmith config set default_platform curseforge`.
 
+## Files other tools may not download
+
+Some authors turn off downloads of their files through CurseForge's API.
+CurseForge still serves those files to its own app, so Modsmith downloads them
+the same way and checks each one against the hashes CurseForge lists. You do
+not need to do anything.
+
 ## Files you must download by hand
 
-Some authors do not allow other tools to download their files. Modsmith lists
-each such file with the page to get it from:
+A file that CurseForge no longer lists cannot be downloaded at all. Modsmith
+names each such file:
 
 ```text
 Error: 1 file cannot be downloaded automatically.
-  mods/entityculling-fabric-1.11.3-mc26.2.jar  download it from https://www.curseforge.com/minecraft/mc-mods/entityculling/files/9100313
+  curseforge file 9100313
 Download them by hand into one folder, then run the command again with --from <folder>.
 ```
 
-Download them into one folder, keeping their names, and add `--from`:
+Find them, put them into one folder with their names, and add `--from`:
 
 ```console
-$ modsmith install curseforge:fabulously-optimized --from Downloads/manual
+$ modsmith install curseforge:some-pack --from Downloads/manual
 ```
 
 `--from` works the same with `add` and `update`. With `--dry-run`, Modsmith

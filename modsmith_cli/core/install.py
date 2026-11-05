@@ -1,6 +1,7 @@
 """Getting a pack ready to install, and adding it to the official launcher."""
 
 import dataclasses
+import io
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,6 +13,7 @@ from modsmith.net import Session
 from modsmith.packs import Modpack, PackEntry, load
 from modsmith.platforms import Platform, Project, Release
 from modsmith.progress import CancelToken, ProgressCallback
+from PIL import Image, UnidentifiedImageError
 
 from .errors import AppError
 from .names import name_from
@@ -19,8 +21,8 @@ from .records import PackSource
 from .refs import LocalPack, ProjectRef
 
 PROFILE_PREFIX = "modsmith-"
-# The launcher shows PNG and JPEG icons; other formats are left out.
-ICON_TYPES = ("image/png", "image/jpeg")
+# The launcher shows icons of this size, and reads only PNG and JPEG.
+ICON_SIZE = 128
 
 
 @dataclass(frozen=True)
@@ -238,7 +240,27 @@ def project_icon(project: Project | None) -> str | None:
             response = session.request("GET", project.icon_url)
     except ModsmithError:
         return None
-    kind = response.headers.get("Content-Type", "").split(";")[0].strip()
-    if kind not in ICON_TYPES:
+    png = launcher_icon(response.content)
+    return icon_data_uri(png, "image/png") if png else None
+
+
+def launcher_icon(data: bytes) -> bytes | None:
+    """Turn an image into a PNG of the size the launcher shows.
+
+    Platforms serve icons as WebP, GIF and other formats the launcher cannot
+    show, sometimes labelled as PNG, so every icon is converted. An animated
+    one keeps its first frame.
+
+    Returns:
+        The PNG, or None if the data is not an image.
+    """
+    try:
+        with Image.open(io.BytesIO(data)) as image:
+            image.seek(0)
+            icon = image.convert("RGBA")
+    except (UnidentifiedImageError, Image.DecompressionBombError, OSError, ValueError):
         return None
-    return icon_data_uri(response.content, kind)
+    icon.thumbnail((ICON_SIZE, ICON_SIZE), Image.Resampling.LANCZOS)
+    out = io.BytesIO()
+    icon.save(out, format="PNG", optimize=True)
+    return out.getvalue()

@@ -1,3 +1,5 @@
+import dataclasses
+
 import pytest
 from modsmith.instances import Instance
 from modsmith.platforms import Dependency
@@ -309,3 +311,26 @@ def test_add_names_a_dependency_with_no_release(run, survival, mods):
     assert "This cannot be installed, because of these problems." in result.stderr
     assert "Haunted 1 needs Ghost Lib, which has no release" in result.stderr
     assert "+ mods/haunted" not in result.stdout
+
+
+def test_add_downloads_curseforge_files_with_no_download_link(
+    run, server, survival, catalogs
+):
+    data = b"blocked mod"
+    # CurseForge's API gives no link, but its CDN serves the file by id and name.
+    server.add_body("/cdn/5101/366/blocked%20mod.jar", data)
+    file = dataclasses.replace(served_file(server, "blocked mod.jar", data), urls=())
+    blocked = dataclasses.replace(
+        release("blocked", loader="test-loader", platform="curseforge", files=(file,)),
+        id="5101366",
+    )
+    catalogs["curseforge"] = Catalog(
+        project("blocked", platform="curseforge"),
+        releases=[blocked],
+        name="curseforge",
+    )
+
+    result = run("add", "survival", "curseforge:blocked", "-y")
+
+    assert result.exit_code == 0, result.output
+    assert (survival.path / "mods" / "blocked mod.jar").read_bytes() == data

@@ -14,6 +14,8 @@ from modsmith.launcher import is_running
 from modsmith.platforms import Platform
 from rich.console import Console
 
+from .core import memory
+from .core.blocked import CURSEFORGE_CDN
 from .core.config import Config, load_config
 from .core.paths import AppPaths
 from .core.platforms import PlatformOpener, open_platform
@@ -43,12 +45,17 @@ class Services:
         environ: The environment variables, or None for the real ones.
         interactive: Whether a person can answer questions.
         launcher_running: Whether the official launcher is open.
+        curseforge_cdn: Where CurseForge serves files that its API gives no
+            download link for.
+        total_memory_mb: How much memory the computer has, or None if unknown.
     """
 
     open_platform: PlatformOpener = open_platform
     environ: Mapping[str, str] | None = None
     interactive: Callable[[], bool] = _interactive
     launcher_running: Callable[[], bool] = is_running
+    curseforge_cdn: str = CURSEFORGE_CDN
+    total_memory_mb: Callable[[], int | None] = memory.total_memory_mb
 
 
 def _console(color: ColorMode, *, stderr: bool) -> Console:

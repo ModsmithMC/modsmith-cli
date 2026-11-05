@@ -1,6 +1,9 @@
+import base64
+import io
 import json
 
 from modsmith.instances import Instance
+from PIL import Image
 
 from modsmith_cli.core.records import PackSource, read_record
 from tests.lib.builders import (
@@ -278,15 +281,19 @@ def test_create_dry_run(run, game, config):
 def test_platform_packs_bring_their_icon(run, server, game, tmp_path, catalogs):
     from tests.lib.server import Reply
 
-    png = b"\x89PNG\r\n\x1a\nicon"
-    icon = server.add("/icon.png", Reply(png, headers={"Content-Type": "image/png"}))
-    webp = server.add(
+    # Platforms serve WebP, sometimes labelled as PNG; the launcher needs PNG.
+    webp = io.BytesIO()
+    Image.new("RGB", (512, 256), "green").save(webp, format="WEBP")
+    icon = server.add(
+        "/icon.png", Reply(webp.getvalue(), headers={"Content-Type": "image/png"})
+    )
+    broken = server.add(
         "/icon.webp", Reply(b"RIFF", headers={"Content-Type": "image/webp"})
     )
     archive = simple_pack(server, tmp_path).read_bytes()
     catalogs["modrinth"] = Catalog(
         project("with-icon", kind="modpack", icon_url=icon),
-        project("other-icon", kind="modpack", icon_url=webp),
+        project("other-icon", kind="modpack", icon_url=broken),
         releases=[
             release("with-icon", files=(served_file(server, "one.mrpack", archive),)),
             release("other-icon", files=(served_file(server, "two.mrpack", archive),)),
@@ -295,5 +302,20 @@ def test_platform_packs_bring_their_icon(run, server, game, tmp_path, catalogs):
     assert run("install", "with-icon", "--yes", "--name", "one").exit_code == 0
     assert run("install", "other-icon", "--yes", "--name", "two").exit_code == 0
     saved = profiles(game)
-    assert saved["modsmith-one"]["icon"].startswith("data:image/png;base64,")
+    prefix = "data:image/png;base64,"
+    assert saved["modsmith-one"]["icon"].startswith(prefix)
+    data = base64.b64decode(saved["modsmith-one"]["icon"].removeprefix(prefix))
+    with Image.open(io.BytesIO(data)) as image:
+        assert (image.format, image.size) == ("PNG", (128, 64))
     assert "icon" not in saved["modsmith-two"]
+
+
+def test_installs_get_memory_and_the_launchers_java_settings(
+    run, server, game, tmp_path
+):
+    run("install", str(simple_pack(server, tmp_path)), "-y")
+    run("create", "empty", "-m", "1.21.1", "-l", "test-loader", "-y")
+    saved = profiles(game)
+    # Half of the 16 GiB the tests report, up to 6 GiB.
+    assert saved["modsmith-test-pack"]["javaArgs"].startswith("-Xmx6144M")
+    assert saved["modsmith-empty"]["javaArgs"].startswith("-Xmx6144M")

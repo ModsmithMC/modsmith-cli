@@ -22,7 +22,7 @@ $ modsmith config set curseforge_api_key '<key>'
 
 ## Files that cannot be downloaded automatically
 
-Their authors allow downloads only from the CurseForge website. Download each
+The platform no longer lists them, so they have to come from you. Put each
 listed file into one folder, and add `--from <folder>`. See
 [Use CurseForge](../guides/curseforge.md#files-you-must-download-by-hand).
 
