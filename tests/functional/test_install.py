@@ -317,5 +317,6 @@ def test_installs_get_memory_and_the_launchers_java_settings(
     run("create", "empty", "-m", "1.21.1", "-l", "test-loader", "-y")
     saved = profiles(game)
     # Half of the 16 GiB the tests report, up to 6 GiB.
-    assert saved["modsmith-test-pack"]["javaArgs"].startswith("-Xmx6144M")
-    assert saved["modsmith-empty"]["javaArgs"].startswith("-Xmx6144M")
+    assert saved["modsmith-test-pack"]["javaArgs"].startswith("-Xmx6144M ")
+    assert "-XX:+UseG1GC" in saved["modsmith-test-pack"]["javaArgs"]
+    assert saved["modsmith-empty"]["javaArgs"].startswith("-Xmx6144M ")

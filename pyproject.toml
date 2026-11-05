@@ -1,6 +1,6 @@
 [project]
 name = "modsmith-cli"
-version = "0.1.1"
+version = "0.1.2"
 description = "Install Minecraft modpacks and mods for the official launcher."
 readme = "README.md"
 license = "MIT"
@@ -16,7 +16,7 @@ classifiers = [
     "Topic :: Games/Entertainment",
 ]
 dependencies = [
-    "modsmith>=0.3.5,<0.4",
+    "modsmith>=0.3.7,<0.4",
     "pillow>=11",
     "platformdirs>=4.3",
     "rich>=13.9",

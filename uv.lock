@@ -534,7 +534,7 @@ wheels = [
 
 [[package]]
 name = "modsmith"
-version = "0.3.5"
+version = "0.3.7"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "filelock" },
@@ -542,14 +542,14 @@ dependencies = [
     { name = "pydantic" },
     { name = "requests" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/cc/01/6a57e5be25d40f10506e690e4888ba24fb0327a2519354b6a2f1998f2ad0/modsmith-0.3.5.tar.gz", hash = "sha256:ac422f9d6081f4bc04185fd536e24410c26324d7465270a180d0b6b14c7eddbb", size = 348087, upload-time = "2026-11-03T13:10:59.799Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/b9/741593c7f38e69f6ebdcccb52c89807ca14487cf6d28a04dc16fa3b7cd9f/modsmith-0.3.7.tar.gz", hash = "sha256:f8fdc20040cc4684574c06dac9fd4c4b1119bf8989234b0800f0a2c1f12584f1", size = 271598, upload-time = "2026-11-05T13:32:39.045Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e3/ba/bb2576e4dd39d667ca572ccb77321f739948fd6bc3779ab37c2afba50dd1/modsmith-0.3.5-py3-none-any.whl", hash = "sha256:8f0760db4c2476d7bbb47ed9b02e18b038ee3b9c2ac52f2f54f779bcb76dd181", size = 96400, upload-time = "2026-11-03T13:10:58.533Z" },
+    { url = "https://files.pythonhosted.org/packages/cd/a3/b6b47c7ac86b23080dc6611af6a4245f97d4766605dd75edc761b7d3ab16/modsmith-0.3.7-py3-none-any.whl", hash = "sha256:cf1d429cf61216a603dfaa9802d9c6e5d3ba3a4d7b3abd029481829dedcc53a0", size = 97001, upload-time = "2026-11-05T13:32:37.471Z" },
 ]
 
 [[package]]
 name = "modsmith-cli"
-version = "0.1.1"
+version = "0.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "modsmith" },
@@ -594,7 +594,7 @@ typing = [
 
 [package.metadata]
 requires-dist = [
-    { name = "modsmith", specifier = ">=0.3.5,<0.4" },
+    { name = "modsmith", specifier = ">=0.3.7,<0.4" },
     { name = "pillow", specifier = ">=11" },
     { name = "platformdirs", specifier = ">=4.3" },
     { name = "rich", specifier = ">=13.9" },

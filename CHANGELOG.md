@@ -6,6 +6,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-11-05
+
 ### Fixed
 
 - Every pack gets its icon in the launcher. Icons are converted to the 128 by
