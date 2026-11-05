@@ -11,6 +11,7 @@ from modsmith.minecraft import GameDir, install_version, list_versions
 from modsmith.packs import Modpack
 
 from ..context import AppContext, get
+from ..core.blocked import pack_from_cdn
 from ..core.config import Config
 from ..core.errors import AppError
 from ..core.install import (
@@ -24,6 +25,7 @@ from ..core.install import (
     project_icon,
     with_optional,
 )
+from ..core.memory import game_memory_mb
 from ..core.names import check_name, name_from
 from ..core.platforms import explained
 from ..core.records import Record, write_record
@@ -185,7 +187,9 @@ def install_command(
         )
     path = free_folder(name or name_from(fetched.pack.name), config)
     chosen = choose_optional(app, fetched.pack, optional or [], all_optional, yes)
-    pack = with_optional(fetched.pack, chosen)
+    pack = pack_from_cdn(
+        with_optional(fetched.pack, chosen), app.services.curseforge_cdn
+    )
     missing = [entry for entry in pack.unresolved if entry.wanted("client")]
     if missing and not from_folders and not dry_run:
         raise UnresolvedEntriesError(missing)
@@ -219,7 +223,7 @@ def install_command(
         version_id,
         instance.path,
         key=key,
-        memory_mb=pack.memory_mb,
+        memory_mb=game_memory_mb(pack.memory_mb, app.services.total_memory_mb()),
         icon=project_icon(fetched.project),
     )
     write_record(instance.path, Record(fetched.source, key, tuple(chosen)))
@@ -343,7 +347,11 @@ def create_command(
     )
     key = profile_key(name)
     key = launcher.add_profile(
-        profile_name(launcher, name, key, name), version_id, path, key=key
+        profile_name(launcher, name, key, name),
+        version_id,
+        path,
+        key=key,
+        memory_mb=game_memory_mb(None, app.services.total_memory_mb()),
     )
     write_record(path, Record(profile=key))
     app.out.print(

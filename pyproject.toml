@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "modsmith>=0.3.5,<0.4",
+    "pillow>=11",
     "platformdirs>=4.3",
     "rich>=13.9",
     "tomli-w>=1.1",

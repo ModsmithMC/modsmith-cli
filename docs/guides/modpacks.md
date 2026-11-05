@@ -28,7 +28,10 @@ alpha and beta releases, run
    folder.
 4. Puts the pack's files into a new instance folder.
 5. Adds an installation to the launcher, with the pack's name and icon, playing
-   from that folder.
+   from that folder. It gets the memory the pack recommends, or half of your
+   computer's memory up to 6 GB, and never so much that your computer keeps
+   less than a quarter. Change it later in the launcher's installation
+   settings.
 
 To see the plan without changing anything, add `--dry-run`. To skip the
 question, add `--yes`.
@@ -62,9 +65,10 @@ choice is remembered for [updates](updates.md).
 
 ## Files you must download by hand
 
-Some CurseForge authors do not allow other tools to download their files. Then
-Modsmith lists those files, each with the page to get it from. Download them
-into one folder, and run the command again with `--from`:
+Modsmith downloads every file a pack lists, including CurseForge files whose
+authors turned off downloads through other tools. Only a file that is gone from
+the platform has to come from you. Modsmith names those files. Put them into
+one folder, and run the command again with `--from`:
 
 ```console
 $ modsmith install curseforge:all-the-mods-9 --from Downloads/atm9-files

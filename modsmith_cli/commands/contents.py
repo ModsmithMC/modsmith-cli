@@ -13,6 +13,7 @@ from rich.table import Table
 from rich.text import Text
 
 from ..context import AppContext, get
+from ..core.blocked import plan_from_cdn
 from ..core.config import PLATFORMS
 from ..core.contents import find_contents
 from ..core.errors import AppError
@@ -157,7 +158,7 @@ def add_command(
                 include_optional=optional,
                 release_only=release_only,
             )
-        plans.append((platform_name, plan))
+        plans.append((platform_name, plan_from_cdn(plan, app.services.curseforge_cdn)))
 
     title = f"Add to {instance.path.name}"
     changes = Changes(

@@ -12,6 +12,7 @@ from modsmith.packs import Modpack
 from rich.text import Text
 
 from ..context import AppContext, get
+from ..core.blocked import pack_from_cdn, plan_from_cdn
 from ..core.install import (
     FetchedPack,
     check_launcher,
@@ -154,7 +155,9 @@ def _pack_update(
         )
     else:
         chosen = _kept_choice(app, fetched.pack, record)
-    pack = with_optional(fetched.pack, chosen)
+    pack = pack_from_cdn(
+        with_optional(fetched.pack, chosen), app.services.curseforge_cdn
+    )
     title = f"Update {state.pack_name or 'the pack'} {state.pack_version or ''}"
     title = f"{title.rstrip()} to {pack.name} {pack.version}"
     pending = show_plan(app, instance.diff(pack), download_sizes(pack), title=title)
@@ -183,7 +186,7 @@ def _addition_updates(
                     continue
         if not plan.additions:
             continue
-        plans.append(plan)
+        plans.append(plan_from_cdn(plan, app.services.curseforge_cdn))
         for title, text in logs:
             show_changelog(app, f"What changed in {title}", text, lines=CHANGELOG_LINES)
     return plans

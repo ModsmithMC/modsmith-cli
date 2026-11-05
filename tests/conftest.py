@@ -23,6 +23,8 @@ VARIABLES = (
     "NO_COLOR",
 )
 
+TOTAL_MEMORY_MB = 16384
+
 
 @pytest.fixture(autouse=True)
 def _block_internet(request: pytest.FixtureRequest) -> None:
@@ -80,12 +82,13 @@ def catalogs() -> dict[str, Catalog]:
 
 
 @pytest.fixture
-def run(catalogs: dict[str, Catalog]) -> Callable[..., Result]:
+def run(catalogs: dict[str, Catalog], server: LocalServer) -> Callable[..., Result]:
     """Run the command line with the test catalogues as its platforms.
 
     Pass ``input`` to answer prompts, ``interactive=True`` to act as if a person
     is at a terminal, and ``launcher_open=True`` to act as if the official
-    launcher is running.
+    launcher is running. CurseForge's CDN is the local server's ``/cdn``, and
+    the computer has 16 GiB of memory.
     """
 
     def open_platform(name: str, config: Config) -> Catalog:
@@ -103,6 +106,8 @@ def run(catalogs: dict[str, Catalog]) -> Callable[..., Result]:
             open_platform=open_platform,
             interactive=lambda: interactive,
             launcher_running=lambda: launcher_open,
+            curseforge_cdn=server.url("/cdn"),
+            total_memory_mb=lambda: TOTAL_MEMORY_MB,
         )
         return CliRunner().invoke(
             app, list(args), obj=services, prog_name="modsmith", input=input
